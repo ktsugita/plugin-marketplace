@@ -20,7 +20,6 @@
 
 - `validate` が `version` を指定していない警告を出すのは、想定どおり。このリポジトリは `version` を付けず、commit ごとに利用者へ更新を届ける。警告以外の指摘が出たときは直す。
 - `AGENTS.md` の「`## Agent skills`」より前を変えたときは、`.github/copilot-instructions.md` も同じ内容にする。Copilot Review は、後者を読む。
-- 上流のコピーを変えようとすると、commit が `upstream-guard` に止められる。上流の更新を取り込むときだけ、[UPSTREAM.md](./UPSTREAM.md) の手順に従って止めを外す。
 
 ## プラグインを足す
 

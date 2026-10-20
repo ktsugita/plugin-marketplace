@@ -50,17 +50,7 @@ hooks {
     ["pre-commit"] {
         fix = true
         stash = "git"
-        steps = (linters) {
-            // 上流のコピーを改変しない。glob は upstream.toml の dest と揃える。
-            // 全ファイルを点検する check には入れない(入れると、常に失敗する)。
-            ["upstream-guard"] = new Step {
-                glob = List(
-                    "plugins/writing/skills/japanese-tech-writing/SKILL.md",
-                    "plugins/writing/skills/cognitive-rhythm-writing/SKILL.md"
-                )
-                check = "mise run guard:upstream"
-            }
-        }
+        steps = linters
     }
     // pytest は、コミットごとに走らせるには遅いことが多いので、push の前に走らせる。
     ["pre-push"] {

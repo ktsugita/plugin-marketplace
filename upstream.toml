@@ -1,6 +1,5 @@
 # 上流(取り込み元の Gist)。`mise run upstream:update` が、最新の版を取得して dest を上書きし、
-# revision を書き換える。上流を足すときは、[[sources]] を足し、hk.pkl の upstream-guard の
-# glob に dest を足す。
+# revision を書き換える。上流を足すときは、[[sources]] を足す。
 
 [[sources]]
 skill = "japanese-tech-writing"

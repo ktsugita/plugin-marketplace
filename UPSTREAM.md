@@ -24,5 +24,5 @@
 
 1. `mise run upstream:update` を実行する。最新の版を取得して、スキルを上書きし、`upstream.toml` のリビジョンを書き換える。
 2. `git diff` で差分を読む。差分がなければ、上流に更新はない。
-3. 問題がなければ commit する。上流のコピーの変更は `pre-commit` の `upstream-guard` が止めるので、このときだけ `HK_SKIP_STEPS=upstream-guard git commit ...` のように止めを外す。
+3. 問題がなければ commit する。
 4. ライセンスの宣言が変わっていないかを確かめる。`gh api gists/67625f2a7d96e3bbdfae8d571a936063 --jq '.history[0].version'` の出力が、上の「取り込み時のリビジョン」と違えば、宣言の内容を読み直す。

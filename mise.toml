@@ -35,7 +35,7 @@ description = "pytest を走らせる"
 run = "uv run --locked pytest"
 
 # 上流(writing の 2 スキル)を最新の版で上書きし、upstream.toml の revision を書き換える。
-# 更新の有無は判定しない。差分は git diff で確認し、commit では upstream-guard を外す。
+# 更新の有無は判定しない。差分は git diff で確認する。
 [tasks."upstream:update"]
 description = "上流の Gist から、writing のスキルを最新の版に更新する"
 run = "uv run --locked python -m plugin_marketplace.upstream"
@@ -88,13 +88,4 @@ if grep -nE '"(version|dependencies)"[[:space:]]*:' .claude-plugin/marketplace.j
   echo "dependencies: 別の marketplace のプラグインを、利用者に先に入れさせない。入っていれば使う、とスキルの本文に書く。" >&2
   exit 1
 fi
-'''
-
-[tasks."guard:upstream"]
-description = "上流のコピーの変更を止める(pre-commit の upstream-guard から呼ぶ)"
-shell = "bash -c"
-run = '''
-echo "上流のコピーは改変しない。調整が必要なら、別名のスキルとして足す。" >&2
-echo "上流の更新を取り込むときだけ、HK_SKIP_STEPS=upstream-guard を付けて commit する(手順は UPSTREAM.md)。" >&2
-exit 1
 '''

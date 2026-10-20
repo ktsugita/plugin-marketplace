@@ -5,11 +5,11 @@ description: このリポジトリのプラグインやスキルを追加、修�
 
 # marketplace の保守で守る判断基準
 
-作業の手順は `CONTRIBUTING.md` に書いてある。`version` と `dependencies` を書かないこと、上流のコピーを改変しないことは、`hk` の点検(`policy`、`upstream-guard`)が止める。ここには、点検では判定できない判断基準だけを置く。
+作業の手順は `CONTRIBUTING.md` に書いてある。`version` と `dependencies` を書かないことは、`hk` の点検(`policy`)が止める。ここには、点検では判定できない判断基準だけを置く。
 
 ## 上流のスキルを調整するとき
 
-- 調整したい内容があれば、上流のコピーは直さず、別名のスキルを足す。
+- 上流のコピー(`UPSTREAM.md` に挙げたスキル)は直さない。次の `mise run upstream:update` で上書きされ、手入れが消える。調整したい内容があれば、別名のスキルを足す。
 
 ## `coding` と `mattpocock-skills`
 
