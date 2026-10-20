@@ -7,6 +7,10 @@ dir = ".claude/skills"
 auto_sync = true
 prune = true
 
+# mise install のたびに、git フック(pre-commit、commit-msg)を入れる。入れ直しても害はない。
+[hooks]
+postinstall = "hk install"
+
 [tools]
 gh = "latest"
 actionlint = "latest"
@@ -42,4 +46,40 @@ if grep -qiE '^(co-authored-by:|generated with )' "$usage_file"; then
   echo "コミットメッセージに AI ツールの帰属行(Co-Authored-By など)があります。削除してください。" >&2
   exit 1
 fi
+'''
+
+# AGENTS.md の共通部分(「## Agent skills」より前)を、Copilot Review 用のコピーに揃える。
+# $(...) は末尾の改行を落とすので、見出しの前の空行の有無は差にならない。
+[tasks."agents-sync:check"]
+description = "AGENTS.md の共通部分と .github/copilot-instructions.md が一致することを確かめる"
+shell = "bash -c"
+run = '''
+common=$(sed '/^## Agent skills/,$d' AGENTS.md)
+copy=$(cat .github/copilot-instructions.md)
+if [ "$common" != "$copy" ]; then
+  echo "AGENTS.md の「## Agent skills」より前と、.github/copilot-instructions.md の内容が違います。" >&2
+  echo "共通部分を変えたときは、両方を同じ内容にしてください。" >&2
+  exit 1
+fi
+'''
+
+[tasks."policy:check"]
+description = "plugin.json と marketplace.json に version と dependencies を書かない方針を点検する"
+shell = "bash -c"
+run = '''
+if grep -nE '"(version|dependencies)"[[:space:]]*:' .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json; then
+  echo "上の行を削除してください。" >&2
+  echo "version: このリポジトリは version を付けず、commit ごとに利用者へ更新を届ける。" >&2
+  echo "dependencies: 別の marketplace のプラグインを、利用者に先に入れさせない。入っていれば使う、とスキルの本文に書く。" >&2
+  exit 1
+fi
+'''
+
+[tasks."guard:upstream"]
+description = "上流のコピーの変更を止める(pre-commit の upstream-guard から呼ぶ)"
+shell = "bash -c"
+run = '''
+echo "上流のコピーは改変しない。調整が必要なら、別名のスキルとして足す。" >&2
+echo "上流の更新を取り込むときだけ、HK_SKIP_STEPS=upstream-guard を付けて commit する(手順は UPSTREAM.md)。" >&2
+exit 1
 '''

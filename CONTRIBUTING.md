@@ -4,9 +4,8 @@
 
 ## 準備
 
-1. [mise](https://mise.jdx.dev/) を入れ、リポジトリのルートで `mise install` を実行する。`gh`、`hk`、`actionlint`、`zizmor` が入る。
+1. [mise](https://mise.jdx.dev/) を入れ、リポジトリのルートで `mise install` を実行する。`gh`、`hk`、`actionlint`、`zizmor` が入り、`pre-commit` と `commit-msg` のフックも入る。
 2. Claude Code を入れる。`mise run validate` が `claude plugin validate` を呼ぶ。mise の管理外なので、別に入れる。
-3. `hk install` で、`pre-commit` と `commit-msg` のフックを入れる。
 
 ## 点検
 
@@ -14,9 +13,13 @@
 | :- | :- |
 | リポジトリ全体を点検する | `mise run check` |
 | `marketplace.json`、`plugin.json`、スキルの定義だけを検証する | `mise run validate` |
+| `version` と `dependencies` を書いていないことを点検する | `mise run policy:check` |
+| `AGENTS.md` と `.github/copilot-instructions.md` の共通部分が一致することを点検する | `mise run agents-sync:check` |
 | コミットメッセージを点検する | `mise run commit-msg:check -- <メッセージのファイル>` |
 
-`validate` が `version` を指定していない警告を出すのは、想定どおり。このリポジトリは `version` を付けず、commit ごとに利用者へ更新を届ける。警告以外の指摘が出たときは直す。
+- `validate` が `version` を指定していない警告を出すのは、想定どおり。このリポジトリは `version` を付けず、commit ごとに利用者へ更新を届ける。警告以外の指摘が出たときは直す。
+- `AGENTS.md` の「`## Agent skills`」より前を変えたときは、`.github/copilot-instructions.md` も同じ内容にする。Copilot Review は、後者を読む。
+- 上流のコピーを変えようとすると、commit が `upstream-guard` に止められる。上流の更新を取り込むときだけ、[UPSTREAM.md](./UPSTREAM.md) の手順に従って止めを外す。
 
 ## プラグインを足す
 
