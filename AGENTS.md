@@ -11,3 +11,17 @@
 - このリポジトリ固有で、設定ファイルやコードを見ても分からない知識は、`.claude/skills/` のローカルスキルに書く
 - 作業でその知識が増えたり変わったりしたら、該当するスキルを更新する
 - 該当するスキルがなければ、新しく作る
+
+## Agent skills
+
+### Issue tracker
+
+Issue は GitHub Issues で管理する(`gh` CLI を使用)。`docs/agents/issue-tracker.md` を参照。
+
+### Triage labels
+
+標準の5ラベル(`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`)をそのまま使う。`docs/agents/triage-labels.md` を参照。
+
+### Domain docs
+
+single-context(ルートの `GLOSSARY.md` と `docs/adr/`)。`docs/agents/domain.md` を参照。
