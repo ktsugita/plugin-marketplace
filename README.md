@@ -18,7 +18,7 @@
 - Claude Code
 - GitHub Copilot CLI
 
-`coding` の一部のスキルは、[`mattpocock-skills`](https://github.com/mattpocock/skills) プラグインが入っていれば、それも使う(`github-pr` の PR 本文のテンプレートなど)。入っていなくても使える。
+[`mattpocock-skills`](https://github.com/mattpocock/skills) プラグインも入れることを推奨する。`coding` の一部のスキルが、入っていればそれも使う(`github-pr` の PR 本文のテンプレートなど)。入っていなくても `coding` は使える。入れ方は「mattpocock-skills も入れる」を参照。
 
 ### Claude Code に入れる
 
@@ -36,6 +36,24 @@ Claude Code の中では、`/plugin marketplace add ktsugita/plugin-marketplace`
 copilot plugin marketplace add ktsugita/plugin-marketplace
 copilot plugin install coding@ktsugita
 copilot plugin install writing@ktsugita
+```
+
+### mattpocock-skills も入れる
+
+別の marketplace(`mattpocock/skills`)から入れる。使うツールに合わせて実行する。
+
+Claude Code:
+
+```bash
+claude plugin marketplace add mattpocock/skills
+claude plugin install mattpocock-skills@mattpocock
+```
+
+GitHub Copilot CLI:
+
+```bash
+copilot plugin marketplace add mattpocock/skills
+copilot plugin install mattpocock-skills@mattpocock
 ```
 
 ## 不具合や要望
