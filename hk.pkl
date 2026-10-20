@@ -1,0 +1,40 @@
+amends "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.pkl"
+// Using a coding agent? See https://hk.jdx.dev/agents
+
+// ツールとタスクは mise.toml が正。ここでは、変更したファイルに応じて mise のタスクを呼ぶ。
+// pre-commit の対象はステージされたファイルだけで、glob に一致しないステップは動かない。
+// リポジトリ全体の点検は mise run check で行う。hk 経由にするなら hk check --all を使う
+// (hk run pre-commit や hk check は、ステージ前の変更やクリーンな状態では何も点検しない)。
+local linters = new Mapping {
+    ["actionlint"] = Builtins.actionlint
+    ["zizmor"] = new Step {
+        glob = List(".github/workflows/**")
+        check = "mise exec zizmor -- zizmor --offline {{files}}"
+    }
+    ["validate"] = new Step {
+        glob = List(".claude-plugin/**", "plugins/**", "scripts/validate.mjs")
+        check = "mise run validate"
+    }
+    ["upstream-verify"] = new Step {
+        glob = List("upstream.json", "plugins/**/SKILL.md", "scripts/sync-upstream.mjs")
+        check = "mise run upstream:verify"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        steps = linters
+    }
+    ["check"] {
+        steps = linters
+    }
+    // コミットメッセージに AI ツールの帰属行(Co-Authored-By など)を入れない。
+    ["commit-msg"] {
+        steps {
+            ["no-ai-attribution"] = new Step {
+                check = "mise run commit-msg:check -- {{commit_msg_file}}"
+            }
+        }
+    }
+}

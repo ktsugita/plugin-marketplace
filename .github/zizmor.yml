@@ -1,0 +1,5 @@
+rules:
+  artipacked:
+    ignore:
+      # 後続の git push が checkout の認証情報を使うため、persist-credentials: false を付けない。
+      - sync-upstream.yml:23

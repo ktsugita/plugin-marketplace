@@ -1,0 +1,44 @@
+{
+  "name": "ktsugita",
+  "owner": {
+    "name": "ktsugita"
+  },
+  "metadata": {
+    "description": "ktsugita自作のプラグイン marketplace"
+  },
+  "plugins": [
+    {
+      "name": "writing",
+      "source": "./plugins/writing",
+      "description": "日本語の技術文書を書く・推敲するための文章規範。k16shikano 氏の Gist 2 本（japanese-tech-writing / cognitive-rhythm-writing）を無改変で同梱する、外部由来のプラグイン。",
+      "category": "writing",
+      "tags": [
+        "external",
+        "japanese",
+        "writing",
+        "claude-code",
+        "copilot-cli"
+      ]
+    },
+    {
+      "name": "coding",
+      "source": "./plugins/coding",
+      "description": "コード開発者向けの規約集（mise、hk、GitHub Actions、Git の設定、Python、PowerShell）を、AI エージェントが従う形で定める。あわせて、GitHub 初学者に Git、Issue、Pull Request の使い方と、リポジトリの初期設定を案内する。",
+      "category": "engineering",
+      "tags": [
+        "mise",
+        "hk",
+        "github-actions",
+        "git",
+        "github",
+        "issue",
+        "pull-request",
+        "python",
+        "powershell",
+        "japanese",
+        "claude-code",
+        "copilot-cli"
+      ]
+    }
+  ]
+}

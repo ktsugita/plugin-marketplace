@@ -1,0 +1,4 @@
+# actionlint が未対応の GitHub-hosted runner のラベル。actionlint が対応したら外す。
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04-arm

@@ -1,0 +1,6 @@
+# mise の skills.auto_sync が、手元のグローバルツールのスキルをここにリンクする(絶対パスなので共有しない)
+.claude/skills/.mise-skills.json
+.claude/skills/hk-configure/
+.claude/skills/hk-debug/
+
+.venv

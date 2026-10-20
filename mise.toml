@@ -1,0 +1,19 @@
+[settings]
+lockfile = true
+lockfile_platforms = ["windows-x64", "linux-x64", "linux-arm64"]
+
+[settings.skills]
+dir = ".claude/skills"
+auto_sync = true
+prune = true
+
+[tools]
+gh = "latest"
+actionlint = "latest"
+"packslip:github.com/jdx/hk" = "latest"
+zizmor = "latest"
+uv = "latest"
+
+[tasks."deps:upgrade"]
+description = "このプロジェクトの依存ツールを最新に更新し、mise.lock を更新する"
+run = ["mise upgrade --local", "mise lock --bump"]

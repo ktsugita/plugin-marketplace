@@ -1,0 +1,23 @@
+{
+  "license": {
+    "name": "Unlicense",
+    "statement": "https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063",
+    "revision": "1092e6b60296c760071c308624e344469ec345cf"
+  },
+  "sources": [
+    {
+      "id": "japanese-tech-writing",
+      "gist": "k16shikano/fd287c3133457c4fd8f5601d34aa817d",
+      "revision": "8f2d57610a73efc97d743c9b0b0ecb1002e09fa4",
+      "file": "SKILL.md",
+      "dest": "plugins/writing/skills/japanese-tech-writing/SKILL.md"
+    },
+    {
+      "id": "cognitive-rhythm-writing",
+      "gist": "k16shikano/eb2929f13ed19c97188393d297be8432",
+      "revision": "a3b1e26beced71d582e13314fb6f5b179b023c76",
+      "file": "SKILL.md",
+      "dest": "plugins/writing/skills/cognitive-rhythm-writing/SKILL.md"
+    }
+  ]
+}

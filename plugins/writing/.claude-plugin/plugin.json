@@ -1,0 +1,9 @@
+{
+  "name": "writing",
+  "description": "日本語の技術文書を書く・推敲するための文章規範（japanese-tech-writing と cognitive-rhythm-writing）",
+  "author": {
+    "name": "bnba-infra"
+  },
+  "repository": "https://github.com/bnba-infra/plugin-marketplace",
+  "keywords": ["writing", "japanese", "technical-writing"]
+}

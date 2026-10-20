@@ -1,0 +1,10 @@
+{
+  "name": "coding",
+  "description": "コード開発者向けの規約集（mise、hk、GitHub Actions、Git の設定、Python、PowerShell）を、AI エージェントが従う形で定める。あわせて、GitHub 初学者に Git、Issue、Pull Request の使い方と、リポジトリの初期設定を案内する。",
+  "author": {
+    "name": "bnba-infra"
+  },
+  "repository": "https://github.com/bnba-infra/plugin-marketplace",
+  "keywords": ["mise", "hk", "github-actions", "git", "github", "issue", "pull-request", "python", "powershell", "japanese"],
+  "dependencies": ["mattpocock-skills"]
+}
