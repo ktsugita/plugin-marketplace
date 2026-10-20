@@ -97,4 +97,4 @@ CI のチェックを必須にする設定は、CI ができてから `github-ac
 
 - commit と push は `git`、PR は `github-pr`、Issue は `github-issue`。
 - CI のワークフローは `github-actions`。Dependabot の対象に使う GitHub Actions を、新しく書くときも同じです。
-- Issue のラベル、`AGENTS.md`、`GLOSSARY.md` の準備は、`mattpocock-skills` の `setup-matt-pocock-skills` が扱います。
+- Issue のラベル、`AGENTS.md`、`GLOSSARY.md` の準備は、`mattpocock-skills` が入っているときは、その `setup-matt-pocock-skills` が扱います。入っていないときは、このスキルでは扱わないことを利用者に伝えます。

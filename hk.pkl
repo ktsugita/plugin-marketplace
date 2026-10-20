@@ -13,12 +13,8 @@ local linters = new Mapping {
         check = "mise exec zizmor -- zizmor --offline {{files}}"
     }
     ["validate"] = new Step {
-        glob = List(".claude-plugin/**", "plugins/**", "scripts/validate.mjs")
+        glob = List(".claude-plugin/**", "plugins/**")
         check = "mise run validate"
-    }
-    ["upstream-verify"] = new Step {
-        glob = List("upstream.json", "plugins/**/SKILL.md", "scripts/sync-upstream.mjs")
-        check = "mise run upstream:verify"
     }
 }
 

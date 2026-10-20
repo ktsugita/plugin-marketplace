@@ -12,8 +12,34 @@ gh = "latest"
 actionlint = "latest"
 "packslip:github.com/jdx/hk" = "latest"
 zizmor = "latest"
-uv = "latest"
 
 [tasks."deps:upgrade"]
 description = "このプロジェクトの依存ツールを最新に更新し、mise.lock を更新する"
 run = ["mise upgrade --local", "mise lock --bump"]
+
+[tasks.check]
+description = "リポジトリ全体を hk で点検する"
+run = "hk check --all"
+
+# claude コマンドは mise の管理外。事前に Claude Code を入れておく。
+# version が未指定の警告は、version を付けない方針なので、そのままにする。
+[tasks.validate]
+description = "marketplace.json、plugin.json、スキルの定義を検証する"
+run = [
+  "claude plugin validate .",
+  "claude plugin validate plugins/coding",
+  "claude plugin validate plugins/writing",
+  "claude plugin validate plugins/coding/skills",
+  "claude plugin validate plugins/writing/skills",
+]
+
+[tasks."commit-msg:check"]
+description = "コミットメッセージに AI ツールの帰属行がないことを確かめる"
+shell = "bash -c"
+usage = 'arg "<file>"'
+run = '''
+if grep -qiE '^(co-authored-by:|generated with )' "$usage_file"; then
+  echo "コミットメッセージに AI ツールの帰属行(Co-Authored-By など)があります。削除してください。" >&2
+  exit 1
+fi
+'''

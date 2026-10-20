@@ -68,8 +68,8 @@ GitHub 初学者（Git の基本操作は一部分かるが、GitHub の Issue �
 
 1. 前提を読み取りで確かめます。今のブランチがベースでないこと（ベースなら、`git` の「`main` に直接 commit した、ブランチを切り忘れた」へ）。ベースより先のコミットがあること（`git log --oneline <ベース>..HEAD`）。**ベース**（マージ先のブランチ）は `gh repo view --json defaultBranchRef --jq .defaultBranchRef.name` で調べ、**ヘッド**（PR の変更を含む、今のブランチ）と区別します。関連する Issue（ブランチ名の番号、または利用者の指定）。
 2. 未 push なら、`push` を提案します（確認を取る。手順は `git`）。
-3. 本文を書きます。`mattpocock-skills:pr` を読み込み、そのテンプレートで書きます。Issue があり、ベースがデフォルトブランチなら、本文に `Closes #番号` の行を足します（`github-issue` を参照）。「準備と前提」で見つけた PR テンプレートがあれば、そちらを優先します（複数あるときは、どれを使うかを利用者に聞きます）。
-   - `mattpocock-skills:pr` が読み込めないときは、本文の作成を進めず、次の文を示します。「PR 本文の作成には `mattpocock-skills` の `pr` が必要です。入っていないようです。Claude Code は `claude plugin install mattpocock-skills@bnba-infra`、Copilot CLI は `copilot plugin install mattpocock-skills@bnba-infra` で入れてください。」
+3. 本文を書きます。「準備と前提」で見つけた PR テンプレートがあれば、それを優先します（複数あるときは、どれを使うかを利用者に聞きます）。なければ、`mattpocock-skills:pr` が使えるときは、それを読み込み、そのテンプレートで書きます。Issue があり、ベースがデフォルトブランチなら、本文に `Closes #番号` の行を足します（`github-issue` を参照）。
+   - `mattpocock-skills:pr` が使えないときは、次の4項目で書きます。概要（何のための変更か）、変更点（何を変えたか）、確認方法（どう確かめたか）、関連 Issue。関連する Issue がなければ、その項目は省きます。
 4. 本文を一時ファイルに書き、送り先のリポジトリ、ベースとヘッド、タイトル、本文を見せて、確認を取ります。タイトルは、リポジトリのコミットの書き方に合わせます。
 5. `gh pr create --title "<タイトル>" --body-file <ファイル> --base <ベース>` で作ります。`--title` と `--body`（または `--body-file`）がないと、対話式のプロンプトが出て止まります。
 6. 既定は、レビューを受けられる PR です。利用者が「まだ途中」と言ったときだけ、`--draft` を提案します。準備ができたら `gh pr ready <番号>`（確認を取る）。
