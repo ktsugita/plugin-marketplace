@@ -7,7 +7,7 @@ dir = ".claude/skills"
 auto_sync = true
 prune = true
 
-# mise install のたびに、git フック(pre-commit、commit-msg)を入れる。入れ直しても害はない。
+# mise install のたびに、hk.pkl に定めた git フックを入れる。入れ直しても害はない。
 [hooks]
 postinstall = "hk install"
 
@@ -16,14 +16,29 @@ gh = "latest"
 actionlint = "latest"
 "packslip:github.com/jdx/hk" = "latest"
 zizmor = "latest"
+uv = "latest"
 
 [tasks."deps:upgrade"]
 description = "このプロジェクトの依存ツールを最新に更新し、mise.lock を更新する"
 run = ["mise upgrade --local", "mise lock --bump"]
 
 [tasks.check]
-description = "リポジトリ全体を hk で点検する"
-run = "hk check --all"
+description = "リポジトリ全体を hk で点検し、テストを走らせる"
+run = ["hk check --all", "mise run test"]
+
+[tasks.fix]
+description = "hk で、直せる指摘をリポジトリ全体で直す"
+run = "hk fix --all"
+
+[tasks.test]
+description = "pytest を走らせる"
+run = "uv run --locked pytest"
+
+# 上流(writing の 2 スキル)を最新の版で上書きし、upstream.toml の revision を書き換える。
+# 更新の有無は判定しない。差分は git diff で確認し、commit では upstream-guard を外す。
+[tasks."upstream:update"]
+description = "上流の Gist から、writing のスキルを最新の版に更新する"
+run = "uv run --locked python -m plugin_marketplace.upstream"
 
 # claude コマンドは mise の管理外。事前に Claude Code を入れておく。
 # version が未指定の警告は、version を付けない方針なので、そのままにする。

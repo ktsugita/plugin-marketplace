@@ -1,0 +1,17 @@
+# 上流(取り込み元の Gist)。`mise run upstream:update` が、最新の版を取得して dest を上書きし、
+# revision を書き換える。上流を足すときは、[[sources]] を足し、hk.pkl の upstream-guard の
+# glob に dest を足す。
+
+[[sources]]
+skill = "japanese-tech-writing"
+gist = "fd287c3133457c4fd8f5601d34aa817d"
+revision = "8f2d57610a73efc97d743c9b0b0ecb1002e09fa4"
+file = "SKILL.md"
+dest = "plugins/writing/skills/japanese-tech-writing/SKILL.md"
+
+[[sources]]
+skill = "cognitive-rhythm-writing"
+gist = "eb2929f13ed19c97188393d297be8432"
+revision = "a3b1e26beced71d582e13314fb6f5b179b023c76"
+file = "SKILL.md"
+dest = "plugins/writing/skills/cognitive-rhythm-writing/SKILL.md"

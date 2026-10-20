@@ -2,3 +2,12 @@
 .claude/skills/.mise-skills.json
 .claude/skills/hk-configure/
 .claude/skills/hk-debug/
+
+# 仮想環境
+.venv/
+
+# バイトコードと、各ツールのキャッシュ
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.pytest_cache/

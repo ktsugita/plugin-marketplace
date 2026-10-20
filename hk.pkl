@@ -6,7 +6,27 @@ import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.
 // pre-commit の対象はステージされたファイルだけで、glob に一致しないステップは動かない。
 // リポジトリ全体の点検は mise run check で行う。hk 経由にするなら hk check --all を使う
 // (hk run pre-commit や hk check は、ステージ前の変更やクリーンな状態では何も点検しない)。
+// ruff と ty は dev 依存に入れ、版は uv.lock で固定する。prefix で uv run --locked を前に付ける。
+local python = new Group {
+    prefix = List("uv", "run", "--locked", "--")
+    steps {
+        ["ruff"] = Builtins.ruff
+        // Group の子ステップは並行して走りうるので、ruff の fix の後に整形する
+        ["ruff-format"] = (Builtins.ruff_format) {
+            depends = "ruff"
+        }
+        ["ty"] = (Builtins.ty) {
+            // {{files}} を外し、.py / .pyi が変わったときにプロジェクト全体を検査する
+            check = new CommandSpec {
+                command = new Command { argv = List("ty", "check") }
+                effect = "read"
+            }
+        }
+    }
+}
+
 local linters = new Mapping {
+    ["python"] = python
     ["actionlint"] = Builtins.actionlint
     ["zizmor"] = new Step {
         glob = List(".github/workflows/**")
@@ -28,8 +48,10 @@ local linters = new Mapping {
 
 hooks {
     ["pre-commit"] {
+        fix = true
+        stash = "git"
         steps = (linters) {
-            // 上流のコピーを改変しない。glob は UPSTREAM.md の「配置先」と揃える。
+            // 上流のコピーを改変しない。glob は upstream.toml の dest と揃える。
             // 全ファイルを点検する check には入れない(入れると、常に失敗する)。
             ["upstream-guard"] = new Step {
                 glob = List(
@@ -40,7 +62,17 @@ hooks {
             }
         }
     }
+    // pytest は、コミットごとに走らせるには遅いことが多いので、push の前に走らせる。
+    ["pre-push"] {
+        steps {
+            ["test"] { check = "mise run test" }
+        }
+    }
     ["check"] {
+        steps = linters
+    }
+    ["fix"] {
+        fix = true
         steps = linters
     }
     // コミットメッセージに AI ツールの帰属行(Co-Authored-By など)を入れない。

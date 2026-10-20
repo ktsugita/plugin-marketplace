@@ -1,0 +1,29 @@
+[project]
+name = "plugin-marketplace"
+version = "0.1.0"
+description = "plugin-marketplace の保守用スクリプト"
+readme = "README.md"
+requires-python = ">=3.15"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.13.3,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+# plugins/ のスキルは Markdown 内の Python のコードブロックを持つ。整形の対象にしない。
+include = ["src/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pytest]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.1",
+    "ty>=0.0.89",
+]

@@ -4,14 +4,15 @@
 
 ## 準備
 
-1. [mise](https://mise.jdx.dev/) を入れ、リポジトリのルートで `mise install` を実行する。`gh`、`hk`、`actionlint`、`zizmor` が入り、`pre-commit` と `commit-msg` のフックも入る。
+1. [mise](https://mise.jdx.dev/) を入れ、リポジトリのルートで `mise install` を実行する。`gh`、`hk`、`uv`、`actionlint`、`zizmor` が入り、git のフックも入る。Python の依存(`ruff`、`ty`、`pytest`)は、初回の `uv run` が `uv.lock` どおりに入れる。
 2. Claude Code を入れる。`mise run validate` が `claude plugin validate` を呼ぶ。mise の管理外なので、別に入れる。
 
 ## 点検
 
 | 目的 | コマンド |
 | :- | :- |
-| リポジトリ全体を点検する | `mise run check` |
+| リポジトリ全体を点検し、テストを走らせる | `mise run check` |
+| テストだけを走らせる(`pre-push` でも走る) | `mise run test` |
 | `marketplace.json`、`plugin.json`、スキルの定義だけを検証する | `mise run validate` |
 | `version` と `dependencies` を書いていないことを点検する | `mise run policy:check` |
 | `AGENTS.md` と `.github/copilot-instructions.md` の共通部分が一致することを点検する | `mise run agents-sync:check` |
@@ -38,7 +39,7 @@
 
 ## 上流のスキルを取り込む・更新する
 
-`writing` の 2 スキルは、外部の Gist のコピー。コピーは改変しない。確認と更新の手順は [UPSTREAM.md](./UPSTREAM.md) に従う。
+`writing` の 2 スキルは、外部の Gist のコピー。コピーは改変しない。`mise run upstream:update` で最新の版に更新する。手順は [UPSTREAM.md](./UPSTREAM.md) に従う。
 
 ## コミット
 
