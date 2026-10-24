@@ -300,6 +300,10 @@ jactionlint 側で、zizmor との重複を一括で止める設定を求める 
 - `zizmor` 1.31.1 に対する、jactionlint の対応状況
 - actionlint 本家の変更を、jactionlint が継続して取り込むか
 
+### 10.4 その後の変更
+
+`.github/dependabot.yml` は削除した。このリポジトリには `.github/workflows/` も `action.yml` もなく、Dependabot の `github-actions` が更新の対象を見つけられずに、Insights のエラー(`Dependabot couldn't find a <anything>.yml`)になったためである。ワークフローを追加するときに、`cooldown.default-days: 7` を付けて作り直す。
+
 ## 出典一覧
 
 - jactionlint(コミット 556be51、2026-10-21): https://github.com/jdx/jactionlint 。`README.md`、`NOTICE.md`、`CHANGELOG.md`、`CONTRIBUTING.md`、`docs/actionlint.md`、`docs/zizmor-parity.md`、`docs/zizmor-measurements.md`、`docs/cli.md`、`docs/install.md`、`docs/hooks.md`、`docs/usage.md`、`docs/v2-migration.md`、`docs/rules.md`、`actionlint_compat_test.go`、`perf_test.go`
