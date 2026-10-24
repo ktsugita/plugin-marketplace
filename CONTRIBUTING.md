@@ -4,7 +4,7 @@
 
 ## 準備
 
-1. [mise](https://mise.jdx.dev/) を入れ、リポジトリのルートで `mise install` を実行する。`gh`、`hk`、`uv`、`actionlint`、`zizmor` が入り、git のフックも入る。Python の依存(`ruff`、`ty`、`pytest`)は、初回の `uv run` が `uv.lock` どおりに入れる。
+1. [mise](https://mise.jdx.dev/) を入れ、リポジトリのルートで `mise install` を実行する。`gh`、`hk`、`uv`、`jactionlint` が入り、git のフックも入る。Python の依存(`ruff`、`ty`、`pytest`)は、初回の `uv run` が `uv.lock` どおりに入れる。
 2. Claude Code を入れる。`mise run validate` が `claude plugin validate` を呼ぶ。mise の管理外なので、別に入れる。
 
 ## 点検

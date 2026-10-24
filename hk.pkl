@@ -1,5 +1,5 @@
-amends "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.7.1/hk@2.7.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.7.1/hk@2.7.1#/Builtins.pkl"
 // Using a coding agent? See https://hk.jdx.dev/agents
 
 // ツールとタスクは mise.toml が正。ここでは、変更したファイルに応じて mise のタスクを呼ぶ。
@@ -27,11 +27,7 @@ local python = new Group {
 
 local linters = new Mapping {
     ["python"] = python
-    ["actionlint"] = Builtins.actionlint
-    ["zizmor"] = new Step {
-        glob = List(".github/workflows/**")
-        check = "mise exec zizmor -- zizmor --offline {{files}}"
-    }
+    ["jactionlint"] = Builtins.jactionlint
     ["validate"] = new Step {
         glob = List(".claude-plugin/**", "plugins/**")
         check = "mise run validate"

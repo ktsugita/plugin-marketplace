@@ -13,9 +13,8 @@ postinstall = "hk install"
 
 [tools]
 gh = "latest"
-actionlint = "latest"
+jactionlint = "latest"
 "packslip:github.com/jdx/hk" = "latest"
-zizmor = "latest"
 uv = "latest"
 
 [tasks."deps:upgrade"]
