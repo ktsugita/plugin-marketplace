@@ -57,6 +57,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
 ```
 
 ### actions/checkout には persist-credentials: false を付ける
