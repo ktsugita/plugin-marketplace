@@ -67,7 +67,7 @@ node = "<LTS の版>"
 ruby = "<版>"
 go = "<版>"
 uv = "latest"
-actionlint = "latest"
+jactionlint = "latest"
 hk = "latest"
 
 [env]

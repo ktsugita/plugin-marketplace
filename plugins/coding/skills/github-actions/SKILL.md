@@ -4,7 +4,7 @@ description: .github/workflows/ 配下のワークフローの作成・編集、
 license: MIT
 ---
 
-ワークフローを作成・編集したら、以下の全項目を適用し、最後に `actionlint` を通してください。
+ワークフローを作成・編集したら、以下の全項目を適用し、最後に `jactionlint` を通してください。
 
 ## セキュリティ
 
@@ -173,11 +173,13 @@ jobs:
           aws-region: ap-northeast-1
 ```
 
-## 静的解析 (`actionlint`)
+## 静的解析 (`jactionlint`)
 
-[actionlint](https://github.com/rhysd/actionlint) は、構文・型・式の誤りとスクリプトインジェクションを、プッシュ前にローカルで検出します。インストールは `mise use actionlint` です。
+[jactionlint](https://github.com/jdx/jactionlint) は、actionlint の fork です。構文・型・式の誤りとスクリプトインジェクションに加え、権限の過剰やアクションの固定漏れといったセキュリティ上の問題も、プッシュ前にローカルで検出します。検査の対象は、ワークフロー、composite action、`dependabot.yml` です。インストールは `mise use jactionlint` です。
 
-git フックに組み込むには `hk` を使い、hk の組み込みステップ `Builtins.actionlint` を指定します（`.yml` と `.yaml` の両方が対象になる）。hk の導入と `hk.pkl` の書き方は、`hk` スキルが使える場合はそれに従います。使えない場合は hk の公式ドキュメント（https://hk.jdx.dev/）を参照します。
+プロファイルは、指定しなければ `default` が使われます。actionlint と同じ範囲に絞るときは `--profile correctness` を指定します。
+
+git フックに組み込むには `hk` を使い、hk の組み込みステップ `Builtins.jactionlint` を指定します（hk 2.6.0 以上が必要。`.yml` と `.yaml` の両方が対象になる）。hk の導入と `hk.pkl` の書き方は、`hk` スキルが使える場合はそれに従います。使えない場合は hk の公式ドキュメント（https://hk.jdx.dev/）を参照します。
 
 ## デバッグ
 
