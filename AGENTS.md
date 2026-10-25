@@ -9,6 +9,7 @@
 - コミットメッセージに AI ツールの帰属行(Co-Authored-By など)を入れない
 
 - 用語は `GLOSSARY.md` に合わせる
+- プラグインやスキルの追加・修正・削除・レビュー、`plugin.json` や `marketplace.json` の編集、上流のスキルに触れるときは、`.claude/skills/marketplace-maintenance/SKILL.md` を読む
 - このリポジトリ固有で、設定ファイルやコードを見ても分からない知識は、`.claude/skills/` のローカルスキルに書く
 - 作業でその知識が増えたり変わったりしたら、該当するスキルを更新する
 - 該当するスキルがなければ、新しく作る
