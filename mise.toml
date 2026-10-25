@@ -1,9 +1,14 @@
 [settings]
+experimental = true
 lockfile = true
 lockfile_platforms = ["windows-x64", "linux-x64", "linux-arm64"]
+idiomatic_version_file_enable_tools = ["python"]
+
+[settings.python]
+compile = false
+uv_venv_auto = "create|source"
 
 [settings.skills]
-dir = ".claude/skills"
 auto_sync = true
 prune = true
 
@@ -14,7 +19,7 @@ postinstall = "hk install"
 [tools]
 gh = "latest"
 jactionlint = "latest"
-"packslip:github.com/jdx/hk" = "latest"
+hk = "latest"
 uv = "latest"
 
 [tasks."deps:upgrade"]
