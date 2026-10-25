@@ -32,7 +32,7 @@ mise でタスクを、hk で git フックを管理するプロジェクトで�
 
 | 方針 | 理由 |
 |---|---|
-| `pwsh` は、`SKILL.md` の「`pwsh` の導入」に従う。PSScriptAnalyzer と Pester は mise の `[tools]` の外（PSGallery）にあり、`psresources.psd1` で固定する | 手元の `pwsh` を尊重し、入れ直しを強いないため。`pwsh` の版も固定したいプロジェクトだけ、mise の `[tools]` に足す。 |
+| `pwsh` は、`references/pwsh-install.md` に従う。PSScriptAnalyzer と Pester は mise の `[tools]` の外（PSGallery）にあり、`psresources.psd1` で固定する | 手元の `pwsh` を尊重し、入れ直しを強いないため。`pwsh` の版も固定したいプロジェクトだけ、mise の `[tools]` に足す。 |
 | 呼び出しは `scripts/lint.ps1` と `scripts/test.ps1` のラッパーに集め、hk のステップと mise タスクから `pwsh -File` で呼ぶ | 単体の `Invoke-ScriptAnalyzer` は違反があっても終了コード 0 で終わり、Pester は `Run.Exit` なしだと失敗しても 0、ありだと Linux で 256 の剰余になるため。`pwsh` の起動には、呼ぶたびに時間がかかるので、ファイルごとに起動せず、同一プロセスのループにするため。 |
 | hk のステップは `argv` の `Command` で書く。`-Command` の後ろに `{{files}}` を並べない | `-Command` は引数を連結して再解釈し、空白や `$`、`&` を含むパスで壊れるため。`-File` なら1引数ずつ届く。 |
 | 導入は `deps` タスクを正本にし、`[hooks] postinstall` から呼ぶ。ラッパーは導入済みの版を検査し、不一致なら `mise run deps` を促して失敗する。自動導入はしない | `postinstall` は `mise install` で走るため。ラッパーが黙って導入すると、版の固定が崩れるため。 |
@@ -233,7 +233,7 @@ if ($result.Result -ne 'Passed') {
 
 非 ASCII を含むソースは BOM 付き UTF-8 にします。付与は三段で行います。
 
-1. 保存時: VS Code の `[powershell]` の `files.encoding` に `utf8bom` を設定します（`.vscode/settings.json` またはユーザー設定）。`.editorconfig` の `charset = utf-8-bom` は、仕様が推奨しておらず、道具が対応しているとは限らないので使いません。
+1. 保存時: VS Code の `[powershell]` の `files.encoding` に `utf8bom` を設定します（`.vscode/settings.json` または個人設定）。`.editorconfig` の `charset = utf-8-bom` は、仕様が推奨しておらず、道具が対応しているとは限らないので使いません。
 2. 検出: `PSUseBOMForUnicodeEncodedFile`（既定で有効）が、BOM の無いファイルを Warning で報告します。
 3. 付与: `lint.ps1 -Fix`（`mise run fix`）が、報告されたファイルに BOM の3バイトを前置し、再解析します。
 

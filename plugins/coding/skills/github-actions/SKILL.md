@@ -4,146 +4,19 @@ description: .github/workflows/ 配下のワークフローの作成・編集、
 license: MIT
 ---
 
-ワークフローを作成・編集したら、以下の全項目を適用し、最後に `jactionlint` を通してください。
+# GitHub Actions の規約とデバッグ
 
-## セキュリティ
+ワークフローを作成・編集したら、セキュリティと信頼性の必須原則を適用し、最後に `jactionlint` で検証します。
 
-### permissions を最小限に設定する
+## 必須の原則（セキュリティ・信頼性）
 
-`permissions` を省略したときの `GITHUB_TOKEN` の権限は、エンタープライズ・組織・リポジトリの設定で決まります。2023年2月以降に作られたものは読み取り専用が既定ですが、それより前からあるものは読み書きの権限が付くことがあります。設定に左右されないよう、トップレベルで既定の権限を絞り、ジョブごとに必要な権限だけを明示してください（`write-all` ではなく `contents: write` など）。`permissions` で1つでも権限を指定すると、指定しなかった権限は `none` になります。
+### 1. `permissions` を最小限にする
 
-```yaml
-permissions:
-  contents: read
+設定に左右されないよう、トップレベルで既定の権限を絞り（`permissions: contents: read` または `permissions: {}`）、書き込み権限が必要なジョブにだけ個別に付与します。`write-all` は使いません。
 
-jobs:
-  publish:
-    permissions:
-      contents: write
-```
+### 2. スクリプトインジェクションを防ぐ
 
-### スクリプトインジェクション（式直接展開）を防ぐ
-
-`${{ github.event... }}` や `${{ inputs... }}` などの外部入力を `run:` に直接埋め込むと、任意コード実行の脆弱性になります。必ず中間環境変数（`env:`）を介して参照してください。
-
-```yaml
-- name: Print issue title
-  env:
-    ISSUE_TITLE: ${{ github.event.issue.title }}
-  run: |
-    echo "Processing issue: $ISSUE_TITLE"
-```
-
-### アクションを commit SHA でピン留めする
-
-`@main` や `@latest` は、予期しない破壊的変更の影響を受けます。`@vN` のようなタグも、作者が付け替えたり削除したりできます。GitHub が不変とするのは完全な commit SHA へのピン留めだけなので、`uses: actions/checkout@<commit-sha> # vX.Y.Z` の形で、版をコメントに書いてください。
-
-SHA と版は、書く時点で次のコマンドで調べます。
-
-```bash
-# 最新のリリースのタグ
-gh api repos/<owner>/<repo>/releases/latest --jq .tag_name
-# そのタグが指す commit SHA
-gh api repos/<owner>/<repo>/commits/<タグ> --jq .sha
-```
-
-ピン留めした SHA の更新は Dependabot に任せます。Dependabot は SHA と版のコメントを一緒に更新します。
-
-```yaml
-# .github/dependabot.yml
-version: 2
-updates:
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 7
-```
-
-### actions/checkout には persist-credentials: false を付ける
-
-既定では `GITHUB_TOKEN` が git の認証情報としてローカルに保存されます。後続ステップで要らなければ、無効化してください。
-
-```yaml
-- uses: actions/checkout@<commit-sha> # vX.Y.Z
-  with:
-    persist-credentials: false
-```
-
-## 信頼性とパフォーマンス
-
-### シェルを `bash` に明示する
-
-`shell` を指定しない `run:` は、Windows 以外のランナーでは `bash -e {0}` で動きます。エラーで止まりますが、パイプの途中の失敗は見逃します。`shell: bash` を明示すると `bash --noprofile --norc -eo pipefail {0}` で動き、パイプの途中の失敗でも止まります。未定義変数も検出したいときは、スクリプトの先頭に `set -u` を足してください。
-
-Windows ランナーの既定シェルは `pwsh` なので、`shell` を指定しないと `set -euo pipefail` はエラーになります。`shell: bash` を指定してください。
-
-```yaml
-defaults:
-  run:
-    shell: bash
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          set -u
-          some-command | other-command
-```
-
-### timeout-minutes を設定する
-
-既定は 360 分（6 時間）です。暴走ジョブを防ぐため、処理時間の見積もりに合わせた値（例: `timeout-minutes: 10`）を設定してください。
-
-### concurrency で重複実行を防ぐ
-
-同じブランチへの連続プッシュで重複実行が起きないよう、`concurrency` を設定してください。
-
-```yaml
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: false
-```
-
-デプロイ系ジョブは `cancel-in-progress: false`（待機）、CI チェックは `true`（キャンセル）でも構いません。
-
-### 依存関係キャッシュを活用する
-
-`setup-*` 系アクションの組み込みキャッシュや `actions/cache` で、CI 実行時間を短縮してください。
-
-```yaml
-# uv: GitHub ホストランナーでは、キャッシュは既定（enable-cache: auto）で有効になる
-- uses: astral-sh/setup-uv@<commit-sha> # vX.Y.Z
-
-# Node.js のキャッシュ例
-- uses: actions/setup-node@<commit-sha> # vX.Y.Z
-  with:
-    node-version: <版>
-    cache: 'npm'
-```
-
-- `node-version` の `<版>` は書く時点で調べる（例: `mise latest node@lts` で最新の LTS）。
-- setup-uv の `enable-cache` は既定の `auto` のままにする。`auto` は、release、タグの push、`pull_request_target`、`workflow_run` ではキャッシュを使わない（キャッシュポイズニング対策）。`enable-cache: true` を明示すると、この保護が外れる。
-- リリースやデプロイのような権限の強いワークフローでは、キャッシュを使わない。setup-node では `cache` を指定せず、さらに `package-manager-cache: false` を指定する。`package.json` の `packageManager`（または `devEngines.packageManager`）に npm が書かれていると、`cache` を指定しなくてもキャッシュが自動で有効になるためである。
-
-## メンテナビリティ
-
-### workflow_dispatch を追加する
-
-デバッグや緊急時に再実行できるよう、`on:` に `workflow_dispatch:` を含めてください。
-
-```yaml
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-```
-
-### GitHub CLI (`gh`) 実行時の GH_TOKEN 設定
-
-ステップ内で `gh` を使うときは、`env: GH_TOKEN: ${{ github.token }}` を設定してください。
+`${{ github.event... }}` や `${{ inputs... }}` などの外部入力を `run:` に直接展開せず、必ず中間環境変数（`env:`）を介してシェル変数として参照します。ステップ内で `gh` を使うときも `env: GH_TOKEN: ${{ github.token }}` を渡します。
 
 ```yaml
 - name: Check PR status
@@ -153,45 +26,39 @@ on:
   run: gh pr view "$PR_NUMBER"
 ```
 
-## AWS 認証
+### 3. アクションを完全な commit SHA でピン留めする
 
-GitHub Actions Runner から AWS リソースにアクセスするときは、`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` をシークレットに保存せず、OIDC で一時的な認証情報を取得してください。OIDC を使うジョブには `id-token: write` と `contents: read` が必要です。AWS 側では、事前に OIDC Identity Provider と IAM ロールを設定します。
+タグ（`@v4` など）やブランチは書き換えられうるため、`uses: actions/checkout@<commit-sha> # vX.Y.Z` の形で完全な commit SHA に固定し、版をコメントに残します。
 
-```yaml
-jobs:
-  deploy:
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - uses: actions/checkout@<commit-sha> # vX.Y.Z
-        with:
-          persist-credentials: false
-
-      - uses: aws-actions/configure-aws-credentials@<commit-sha> # vX.Y.Z
-        with:
-          role-to-assume: arn:aws:iam::123456789012:role/MyGitHubActionsRole
-          aws-region: ap-northeast-1
+```bash
+# 最新リリースのタグと commit SHA の取得
+gh api repos/<owner>/<repo>/releases/latest --jq .tag_name
+gh api repos/<owner>/<repo>/commits/<タグ> --jq .sha
 ```
 
-## 静的解析 (`jactionlint`)
+更新は `.github/dependabot.yml`（`package-ecosystem: github-actions`、`cooldown: default-days: 7`）に任せます。
 
-[jactionlint](https://github.com/jdx/jactionlint) は、actionlint の fork です。構文・型・式の誤りとスクリプトインジェクションに加え、権限の過剰やアクションの固定漏れといったセキュリティ上の問題も、プッシュ前にローカルで検出します。検査の対象は、ワークフロー、composite action、`dependabot.yml` です。インストールは `mise use jactionlint` です。
+### 4. `actions/checkout` に `persist-credentials: false` を付ける
 
-プロファイルは、指定しなければ `default` が使われます。actionlint と同じ範囲に絞るときは `--profile correctness` を指定します。
+後続ステップで git の認証情報が不要なら、`with: persist-credentials: false` を指定してローカルへの `GITHUB_TOKEN` 保存を防ぎます。
 
-git フックに組み込むには `hk` を使い、hk の組み込みステップ `Builtins.jactionlint` を指定します（hk 2.6.0 以上が必要。`.yml` と `.yaml` の両方が対象になる）。hk の導入と `hk.pkl` の書き方は、`hk` スキルが使える場合はそれに従います。使えない場合は hk の公式ドキュメント（https://hk.jdx.dev/）を参照します。
+### 5. シェルとタイムアウトを明示する
 
-## デバッグ
+- `run:` には `shell: bash` を明示します（`defaults.run.shell: bash` でも可）。指定しないと Windows ランナーでは既定が `pwsh` になり、Linux / macOS でも `-o pipefail` が付かない `bash -e {0}` になります。未定義変数も止める場合は先頭に `set -u` を足します。
+- 各ジョブに処理時間に見合った `timeout-minutes`（例: `10`）を設定します（既定は 360 分）。
 
-ワークフローが失敗したり想定外の動作をしたりするときは、まずデバッグログを有効にして再実行します。GitHub の UI の「Re-run jobs」で「Enable debug logging」を選ぶか、`gh run rerun <run_id> --debug` を使います。
+## 用途別の設定
 
-毎回の実行でデバッグログが必要なときは、リポジトリの Settings → Secrets and variables → Actions で、次の変数（またはシークレット）を設定します。両方にある場合はシークレットが優先されます。確認が終わったら削除してください。
+- **`concurrency`**: 同一ブランチへの連続 push による重複実行を防ぐため、`group: ${{ github.workflow }}-${{ github.ref || github.run_id }}` を設定します（CI は `cancel-in-progress: true`、デプロイ系は `false`）。
+- **キャッシュと権限境界**:
+  - 通常の CI では `setup-*` の組み込みキャッシュを活用します（`astral-sh/setup-uv` の `enable-cache` はキャッシュポイズニング保護が働く既定の `auto` のままにし、`true` を明示しない）。
+  - **リリースやデプロイなど強い権限を持つワークフローではキャッシュを使いません。** `actions/setup-node` は `package.json` に `packageManager` があると自動でキャッシュを有効にするため、強権限のワークフローでは `package-manager-cache: false` を明示します。
+- **`workflow_dispatch`**: 手動再実行や検証が必要なワークフローには `on:` に `workflow_dispatch:` を含めます。
+- **AWS 認証**: 長期アクセスキーをシークレットに置かず、`aws-actions/configure-aws-credentials` と OIDC（`permissions: id-token: write, contents: read`）で一時認証情報を取得します。
 
-| 名前                   | 値     | 効果                             |
-| ---------------------- | ------ | -------------------------------- |
-| `ACTIONS_STEP_DEBUG`   | `true` | ステップの詳細ログを出力         |
-| `ACTIONS_RUNNER_DEBUG` | `true` | ランナー自体のデバッグログを出力 |
+## 静的解析（`jactionlint`）とデバッグ
 
-実行状況は `gh run list`、`gh run view <run_id> --log-failed`（失敗したステップのログだけ）、`gh run watch <run_id>` で確認します。`gh workflow run <workflow-file-or-name> [--ref <branch>]` で手動トリガーするには、`workflow_dispatch` が必要です。
+- **静的解析**: [jactionlint](https://github.com/jdx/jactionlint)（`mise use jactionlint`）でワークフロー、composite action、`dependabot.yml` の構文・型・セキュリティ問題を検証します。git フックに組み込むときは `hk` 2.6.0 以上の `Builtins.jactionlint` を使います（`hk.pkl` の `amends` / `import` の参照先の版も 2.6.0 以上であることを確かめます。`hk` スキルを参照）。
+- **デバッグ**:
+  - 失敗ログの確認: `gh run list`、`gh run view <run_id> --log-failed`、`gh run watch <run_id>`。
+  - デバッグ再実行: `gh run rerun <run_id> --debug`（継続的に出す場合はリポジトリの Actions 変数 `ACTIONS_STEP_DEBUG=true` / `ACTIONS_RUNNER_DEBUG=true` を一時設定し、調査後に削除する）。

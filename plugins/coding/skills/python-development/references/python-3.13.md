@@ -5,7 +5,7 @@ Python 3.12 で導入された構文（PEP 695 型パラメータなど）に加
 
 ## 設定
 
-`pyproject.toml` の `requires-python` で対象バージョンを指定します（Ruff の `target-version` は書かない。理由は SKILL.md を参照）。
+`pyproject.toml` の `requires-python` で対象バージョンを指定します（Ruff は `requires-python` から推論するため、`target-version` は書きません）。
 
 ```toml
 [project]
