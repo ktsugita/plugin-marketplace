@@ -1,6 +1,6 @@
 # Windows と WSL の Git の問題
 
-Windows か WSL の Git の問題を扱うときに読みます。層、実効値、出所、提示だけの意味と、読み書きの規則は、`SKILL.md` に従います。
+Windows か WSL の Git の問題を扱うときに読みます。読み書きの規則は `SKILL.md` に従います。
 
 Git のコマンドは、PowerShell、cmd、Git Bash で同じ形で書きます。どれも同じ `git.exe` を動かすためです。環境ごとに変わるのは、どの git が呼ばれているかの確認だけで、cmd では `where git` を使います（PowerShell と Git Bash、WSL は `SKILL.md` の診断のとおり）。
 

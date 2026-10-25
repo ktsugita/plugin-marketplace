@@ -5,7 +5,7 @@ Python 3.12、3.13、3.14 で導入された構文に加えて、以下の最新
 
 ## 設定
 
-`pyproject.toml` の `requires-python` で対象バージョンを指定します（Ruff の `target-version` は書かない。理由は SKILL.md を参照）。
+`pyproject.toml` の `requires-python` で対象バージョンを指定します（Ruff は `requires-python` から推論するため、`target-version` は書きません）。
 
 ```toml
 [project]

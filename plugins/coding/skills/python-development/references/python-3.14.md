@@ -5,7 +5,7 @@ Python 3.12 および 3.13 で導入された構文に加えて、以下の最�
 
 ## 設定
 
-`pyproject.toml` の `requires-python` で対象バージョンを指定します（Ruff の `target-version` は書かない。理由は SKILL.md を参照）。
+`pyproject.toml` の `requires-python` で対象バージョンを指定します（Ruff は `requires-python` から推論するため、`target-version` は書きません）。
 
 ```toml
 [project]
@@ -20,9 +20,6 @@ Python 3.14 では型注釈が自動的に遅延評価（PEP 649 / 749）され�
 循環参照の回避を目的とした `from __future__ import annotations` の記述は不要です。
 
 ```python
-# from __future__ import annotations のインポートは不要
-
-
 class Node:
 
     def __init__(self, parent: Node | None = None) -> None:
@@ -31,19 +28,15 @@ class Node:
 
 ### 2. テンプレート文字列 (PEP 750)
 
-SQL クエリ、HTML、シェルコマンドなど、構造化処理やエスケープが必要な文字列生成には、生の f-strings ではなくテンプレート文字列（`t"..."`）と専用プロセッサを使用してください。
+カスタムエスケープや構造化処理を行う DSL・HTML テンプレート等を自作・利用する場合は、生の f-strings の代わりにテンプレート文字列（`t"..."`）と専用プロセッサを使えます（DB クエリ等は引き続きドライバのパラメータバインディングを使用します）。
 
-| アンチパターン（インジェクションリスク） | 推奨パターン |
-|------------------------------------------|--------------|
-| `query = f"SELECT * FROM users WHERE id = {user_id}"` | `query = sql_processor(t"SELECT * FROM users WHERE id = {user_id}")` |
+```python
+query = sql_processor(t"SELECT * FROM users WHERE id = {user_id}")
+```
 
 ### 3. サブインタプリタによる並列処理 (PEP 734)
 
-CPU 負荷の高いタスクを並列実行する場合、GIL の影響を受けずプロセスの生成コストを抑えられる `concurrent.interpreters` (PEP 734) を優先してください。
-
-| アンチパターン | 推奨パターン |
-|----------------|--------------|
-| `import multiprocessing` による重いプロセス起動 | `import concurrent.interpreters` によるサブインタプリタ並列処理 |
+標準ライブラリ `concurrent.interpreters` (PEP 734) により、別プロセスを起動せずに GIL を分離したサブインタプリタで Python コードを並列実行できます。
 
 ### 4. 例外処理と制御フローの変更 (PEP 758 / 765)
 
