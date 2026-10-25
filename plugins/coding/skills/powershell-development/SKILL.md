@@ -73,4 +73,4 @@ mise run fix     # 非 ASCII を含むファイルへの BOM 前置（整形は�
 mise run check   # PSScriptAnalyzer と Pester
 ```
 
-`mise` タスクが無いプロジェクトでは、`pwsh -NoProfile -File scripts/lint.ps1` と `pwsh -NoProfile -File scripts/test.ps1` を実行します。
+`mise` タスクが無いプロジェクトでは、`scripts/lint.ps1` と `scripts/test.ps1` があれば `pwsh -NoProfile -File` で実行し、ラッパーも無ければ既存の検証手順に従うか、`references/toolchain.md` に沿って導入を提案します。

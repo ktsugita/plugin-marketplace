@@ -58,7 +58,7 @@ gh api repos/<owner>/<repo>/commits/<タグ> --jq .sha
 
 ## 静的解析（`jactionlint`）とデバッグ
 
-- **静的解析**: [jactionlint](https://github.com/jdx/jactionlint)（`mise use jactionlint`）でワークフロー、composite action、`dependabot.yml` の構文・型・セキュリティ問題を検証します。git フックに組み込むときは `hk` の `Builtins.jactionlint` を使います（`hk` スキルを参照）。
+- **静的解析**: [jactionlint](https://github.com/jdx/jactionlint)（`mise use jactionlint`）でワークフロー、composite action、`dependabot.yml` の構文・型・セキュリティ問題を検証します。git フックに組み込むときは `hk` 2.6.0 以上の `Builtins.jactionlint` を使います（`hk.pkl` の `amends` / `import` の参照先の版も 2.6.0 以上であることを確かめます。`hk` スキルを参照）。
 - **デバッグ**:
   - 失敗ログの確認: `gh run list`、`gh run view <run_id> --log-failed`、`gh run watch <run_id>`。
   - デバッグ再実行: `gh run rerun <run_id> --debug`（継続的に出す場合はリポジトリの Actions 変数 `ACTIONS_STEP_DEBUG=true` / `ACTIONS_RUNNER_DEBUG=true` を一時設定し、調査後に削除する）。

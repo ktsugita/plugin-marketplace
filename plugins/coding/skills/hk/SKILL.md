@@ -14,7 +14,7 @@ git フックの管理には `hk`（設定ファイルは `hk.pkl`）を使い�
 
 - **ツールの定義**: `hk` とフックで使う linter・formatter は `mise.toml` に定義します（`pkl` CLI は不要。`hk` が Pkl 評価器を内蔵しています）。ただし Python の ruff・ty・pytest は `uv.lock`（`python-development` スキルを参照）、PowerShell の PSScriptAnalyzer・Pester は `psresources.psd1`（`powershell-development` スキルを参照）で固定します。
 - **検証と修正の分離**: 検証は `hk check`（変更ファイルのみ、全ファイルは `--all`）、書き換えは `hk fix` に分けます。フック失敗時は `--no-verify` で飛ばさず、`hk check` / `hk fix` で直します。
-- **フックの登録**: Git 2.54 以上では `hk install --global --mise`（`global` 層への書き込みのため、コマンドを利用者に提示するだけ）、古い Git やリポジトリ単位で入れる場合は `hk install --mise` を使います。`--mise` により、GUI クライアントなどシェルで mise を有効化していない環境でも mise 管理のツールが動きます。グローバル登録とリポジトリ単位登録は二重実行になるため併用しません（リポジトリ単位から切り替えるときは先に `hk uninstall` を実行します）。
+- **フックの登録**: Git 2.54 以上では `hk install --global --mise`（`global` 層への書き込みのため、コマンドを利用者に提示するだけ。`mise` の絶対パスが記録されます）、古い Git やリポジトリ単位で入れる場合は `hk install --mise` を使います（リポジトリ単位の登録では Git 実行時の `PATH` に `mise` 本体が必要です）。`--mise` により、GUI クライアントなどシェルで mise を有効化していない環境でも mise 管理のツールが動きます。グローバル登録とリポジトリ単位登録は二重実行になるため併用しません（リポジトリ単位から切り替えるときは先に `hk uninstall` を実行します）。
 
 ## 公式スキルの導入
 

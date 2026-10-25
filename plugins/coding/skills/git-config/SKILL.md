@@ -47,7 +47,7 @@ license: MIT
 ### 層の扱いと許可キー
 
 - `global` 層と `system` 層への書き込み（`gh auth setup-git`、`hk install --global`、`git lfs install`、`git credential-manager configure` を含む）は実行せず、コマンドを提示するだけにします。`worktree` 層は使わず、`extensions.worktreeConfig` の有効化も提案しません。
-- `local` 層に書き込んでよいのは、次のキーだけです。
+- `local` 層に直接書き込んでよいのは、次のキーだけです（通常の Git 操作（`clone`、`remote`、`branch` など）や他スキルが案内するツール（`hk install --mise` など）が内部で `local` 層を更新する動作は対象外です）。
   `user.name`、`user.email`、`core.autocrlf`、`core.eol`、`core.longpaths`、`pull.ff`、`pull.rebase`、`fetch.prune`、`push.autoSetupRemote`、`merge.conflictStyle`
 - 上記以外のキーは、外部コマンドの実行や認証経路の変更につながるため、`local` 層でも実行せずコマンドを提示するだけにします（`commit.gpgSign`、`tag.gpgSign`、`gpg.*`、`user.signingkey`、`core.sshCommand`、`core.hooksPath`、`core.fsmonitor`、`alias.*`、`filter.*`、`credential.*`、`url.*`、`remote.*.url`、`http.*`、エディタ・ページャなど）。
 - 署名の失敗（`gpg failed to sign the data` など）では、署名設定を外さずにエラーの原因を報告します。
