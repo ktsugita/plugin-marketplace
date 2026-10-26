@@ -13,7 +13,7 @@ license: MIT
 | :- | :- |
 | すぐ実行する | `gh pr list` / `view` / `status` / `diff` / `checks`、`gh run view --log-failed`、`gh repo view`、レビュー指摘の読み取り（`gh api` の GET と GraphQL の query） |
 | 説明してから実行する | `gh pr checkout` |
-| 確認を取ってから実行する | `gh pr create`（`--draft` を含む）、`comment`、`review`、`edit`、`ready`、`update-branch`、`merge`（`--auto` を含む）、`close`、`reopen`、`revert`、`gh run rerun`、スレッドへの返信と Resolve、ローカルの `git branch -D` |
+| 確認を取ってから実行する | `gh pr create`（`--draft` を含む）、`comment`、`review`、`edit`、`ready`、`update-branch`、`merge`（`--auto` を含む）、`close`、`reopen`、`revert`、`gh run rerun`、スレッドへの返信と Resolve |
 
 - 確認では、送り先のリポジトリと操作の内容（タイトルと本文、ベースとヘッド、マージ方法など）を示します。
 - リポジトリの規約（PR テンプレート、`CONTRIBUTING.md`、`AGENTS.md`）を先に確かめます。PR テンプレートは `git ls-tree -r --name-only origin/<ベース> | grep -i -E '(^|/)pull_request_template(\.md|/)'` で探します。
@@ -49,7 +49,7 @@ license: MIT
 ### マージしたあと
 
 1. `git switch <ベース>` と `git pull --ff-only` でベースを最新にし、`git fetch --prune` で参照を整えます。
-2. squash マージしたブランチは `git branch -d` が拒否するため、`gh pr view <番号> --json state` で `MERGED` を確かめたうえで、確認を取って `git branch -D <ブランチ名>` を実行します。
+2. squash マージしたブランチは `git branch -d` が拒否します。`git branch -D` は未 push の commit を失うため、`gh pr view <番号> --json state,headRefOid` で `MERGED` と PR の最終 commit を取り、ローカルブランチの先頭（`git rev-parse <ブランチ名>`）と一致するときだけ、確認なしで `git branch -D <ブランチ名>` を実行します。一致しないときは未 push の commit があるので、内容を示して確認を取ります。リモートブランチの削除はリポジトリの自動削除設定に任せ、このスキルでは行いません。
 
 ## 他のスキルへの案内
 
