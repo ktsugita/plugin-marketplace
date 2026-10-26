@@ -12,6 +12,8 @@
 | 要設定 | `init.defaultBranch` | `main` | Git 3.0 で既定が `master` から `main` に変わります。未設定だと `git init` のたびに hint が出ます |
 | 要設定 | `user.name`、`user.email` | 利用者のもの（推奨値は持たない） | 未設定だと commit が失敗する場合があります（ホスト名にドメインがないと終了コード 128）。未設定のときだけ報告します |
 | 要設定 | `core.autocrlf` | Windows は `true`、WSL・Linux・macOS は `input` | 環境ごとに改行をそろえるためです。下の注記を読みます |
+| 要設定 | `core.longpaths` | Windows は `true`、それ以外は対象外 | 既定は無効で、260 文字を超えるパスのクローンやチェックアウトが `Filename too long` で失敗します |
+| 任意 | `core.symlinks` | Windows は `true`、それ以外は対象外 | 既定ではシンボリックリンクが、リンク先の文字列を内容とする通常ファイルになります。リンクの作成には、開発者モードか「シンボリックリンクの作成」権限が要ります。権限がない環境で `true` にするとチェックアウトが失敗するので、権限を確かめてから提案します |
 | 任意 | `core.editor` | 推奨値は持たない（環境依存） | `GIT_EDITOR`、`VISUAL`、`EDITOR` も無いと、Git for Windows は `vim` に落ちます。3つの環境変数とも無く、未設定のときだけ知らせます |
 | 任意 | `fetch.prune` | `true` | 削除済みブランチの追跡参照が溜まりません |
 | 任意 | `push.autoSetupRemote` | `true` | 新しいブランチの最初の `git push` が失敗せず、`--set-upstream` を案内されません |
@@ -37,7 +39,7 @@ Git 3.0 での既定の変更は、公式の BreakingChanges（https://git-scm.c
 推奨のキーをすべて、キーの集合の問い合わせに渡します。
 
 ```sh
-git config --show-origin --show-scope --get-regexp '^(pull\.ff|init\.defaultbranch|user\.name|user\.email|core\.autocrlf|core\.editor|fetch\.prune|push\.autosetupremote|merge\.conflictstyle)$'
+git config --show-origin --show-scope --get-regexp '^(pull\.ff|init\.defaultbranch|user\.name|user\.email|core\.autocrlf|core\.longpaths|core\.symlinks|core\.editor|fetch\.prune|push\.autosetupremote|merge\.conflictstyle)$'
 ```
 
 出力には層ごとの全行が出ます。単一値のキーの実効値は、最後の行です。値を出さない種類のキーはリストに入れていないので、この出力には出ません。
