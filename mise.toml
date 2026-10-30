@@ -14,17 +14,17 @@ prune = true
 
 # mise install のたびに、hk.pkl に定めた git フックを入れる。入れ直しても害はない。
 [hooks]
-postinstall = "hk install"
+postinstall = "hk install --mise"
 
 [tools]
 gh = "latest"
+hk = { version = "latest", workflow = "release.yml" }
 jactionlint = "latest"
-hk = "latest"
 uv = "latest"
 
 [tasks."deps:upgrade"]
 description = "このプロジェクトの依存ツールを最新に更新し、mise.lock を更新する"
-run = ["mise upgrade --local", "mise lock --bump"]
+run = ["mise upgrade --local", "mise lock --bump", "uv sync --upgrade"]
 
 [tasks.check]
 description = "リポジトリ全体を hk で点検し、テストを走らせる"
