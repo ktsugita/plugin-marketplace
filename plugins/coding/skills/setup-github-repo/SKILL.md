@@ -1,23 +1,23 @@
 ---
 name: setup-github-repo
-description: GitHub リポジトリの初期設定(Copilot のレビューを日本語にする指示、マージ設定、Dependabot、デフォルトブランチのルールセット)を整えるとき、`gh repo create` や設定を書き込むコマンドを実行する前に、必ず使用する。「新しいリポジトリを作る」「Copilot のレビューが英語で届く」と言われたとき、または既存のリポジトリの設定を点検するときにも使う。
+description: GitHub リポジトリの初期設定(Copilot のレビューを日本語にする指示、マージ設定、Dependabot、デフォルトブランチのルールセット、Description と使わない機能の整理)を整えるとき、`gh repo create` や設定を書き込むコマンドを実行する前に、必ず使用する。「新しいリポジトリを作る」「Copilot のレビューが英語で届く」と言われたとき、または既存のリポジトリの設定を点検するときにも使う。
 license: MIT
 ---
 
 # GitHub リポジトリの初期設定
 
-新しいリポジトリや既存のリポジトリで、4つの初期設定の現状を読み取り、足りない項目だけを提案して整えます。
+新しいリポジトリや既存のリポジトリで、5つの初期設定の現状を読み取り、足りない項目だけを提案して整えます。
 
 ## 前提と確認
 
 - 読み取り（`gh auth status`、`gh repo view`、`gh api` の GET）はすぐ実行します。対話式の `gh auth login` は提示だけにし、`gh auth token` や `--show-token` は使いません。
-- 書き込み（`gh repo create`、`gh repo edit --visibility`、`gh api` の PATCH / POST / PUT、`.github/` のファイル追加と commit / push）は、送り先のリポジトリと変更内容を示して確認を取ってから実行します。
+- 書き込み（`gh repo create`、`gh repo edit`（`--visibility` を含む）、`gh api` の PATCH / POST / PUT、`.github/` のファイル追加と commit / push）は、送り先のリポジトリと変更内容を示して確認を取ってから実行します。
 - 新しく作るときは、`gh repo create <名前> --private --clone` でまず非公開として作り、公開への切り替えを求められたときは `references/go-public.md` に従います。
 
 ## 手順
 
-1. **権限を確かめる**: `gh api repos/<owner>/<repo> --jq .permissions.admin` が `true` でなければ、マージ設定とルールセットは書き込めないため、管理者への依頼文（「管理者の権限がない場合」）を示します。ファイルの追加（必要なときの Copilot の指示と Dependabot）は PR で進められます。
-2. **現状を読んで差分を示す**: 下の表の4項目を調べ、「済み」か「足りない」かを一覧にします。
+1. **権限を確かめる**: `gh api repos/<owner>/<repo> --jq .permissions.admin` が `true` でなければ、マージ設定、ルールセット、リポジトリの見せ方は書き込めないため、管理者への依頼文（「管理者の権限がない場合」）を示します。ファイルの追加（必要なときの Copilot の指示と Dependabot）は PR で進められます。
+2. **現状を読んで差分を示す**: 下の表の5項目を調べ、「済み」か「足りない」かを一覧にします。
 3. **確認を取って順に適用する**: 適用の順は **ファイル → マージ設定 → ルールセット** です。ルールセットを最後にするのは、先に入れると初期ファイルを `main` に直接 push できなくなるためです。
 
 | 項目 | 現状の読み方 | 適用 |
@@ -26,6 +26,7 @@ license: MIT
 | マージ設定 | `gh api repos/<owner>/<repo>` の `allow_squash_merge`、`allow_merge_commit`、`allow_rebase_merge`、`delete_branch_on_merge` | squash のみ許可し、マージ後にブランチを自動削除する |
 | Dependabot | `.github/dependabot.yml` があるか（`.github/workflows/` がまだなければ見送る） | `references/dependabot.yml` を置く |
 | ルールセット | `gh api repos/<owner>/<repo>/rulesets` に同名またはデフォルトブランチ対象のものがあれば、`rulesets/<id>` で `conditions`・`rules`・`bypass_actors` を `references/ruleset.json` と比較する | なければ POST で作成し、中身が違えば差分を示して PUT で更新する |
+| リポジトリの見せ方 | `gh repo view --json description,homepageUrl,repositoryTopics,hasWikiEnabled,hasProjectsEnabled` で、Description が空でないか、Wiki と Projects を使っているか | 下の「リポジトリの見せ方の注意点」に従う |
 
 - Copilot のコードレビューが `AGENTS.md` を読むのは、GitHub.com 上のレビューだけです。IDE 上のレビューにも日本語の指示を効かせたいときは、`.github/copilot-instructions.md` も置きます。
 
@@ -50,9 +51,16 @@ gh api -X PATCH repos/<owner>/<repo> \
 - 更新: `gh api -X PUT repos/<owner>/<repo>/rulesets/<id> --input <ruleset.json の絶対パス>`
 - 非公開リポジトリでプラン制限（`403`）が返ったときは、再試行せず理由を伝えて見送ります。
 
+### リポジトリの見せ方の注意点
+
+- Description: 空なら、README の冒頭から 1 行の文面を下書きして示し、確認を取ります。言語は README に合わせます。`gh repo edit <owner>/<repo> --description "<文面>"` で設定します。
+- Topics: 広く使ってもらうリポジトリのときだけ候補を示します。主に自分用のリポジトリでは、利用者が求めたときだけ付けます。
+- Website: 公開しているサイトがなければ空のままにします。
+- Wiki と Projects: README や `docs/` に文書を集めていて、Wiki と Projects を使っていないときだけ、無効にすることを提案します。使っているかどうかは利用者に尋ねます。`gh repo edit <owner>/<repo> --enable-wiki=false --enable-projects=false` で無効にします。Issue は無効にしません。無効にしてもページは消えず、`--enable-wiki=true --enable-projects=true` で有効に戻せます。
+
 ## 管理者の権限がない場合
 
-> `<owner>/<repo>` の設定をお願いします。マージ方法を squash だけにして、マージ後にブランチを削除する設定と、main への変更を PR に限るルールセットです。内容は `references/ruleset.json` にあります。
+> `<owner>/<repo>` の設定をお願いします。マージ方法を squash だけにして、マージ後にブランチを削除する設定と、main への変更を PR に限るルールセットです。内容は `references/ruleset.json` にあります。あわせて、Description の設定と、使っていない Wiki と Projects の無効化もお願いします。
 
 ## 他のスキルへの案内
 
