@@ -28,7 +28,10 @@ license: MIT
 
 ### 3. ワークフローの依存をロックファイルで固定する
 
-タグ（`@v4` など）やブランチは付け替えられうるため、[gh-actions-lock](https://github.com/github/gh-actions-lock) で、直接・間接のすべてのアクションを検証済みの commit に固定し、`.github/workflows/actions.lock`（Workflow Lockfiles）に記録します。`uses:` は読みやすいタグのまま書き、commit SHA には書き換えません。
+タグ（`@v4` など）やブランチは付け替えられうるため、[gh-actions-lock](https://github.com/github/gh-actions-lock) で、直接・間接のすべてのアクションを検証済みの commit に固定し、`.github/workflows/actions.lock`（Workflow Lockfiles）に記録します。`uses:` は、ロックファイルが対象とする参照では、読みやすいタグのまま書き、commit SHA には書き換えません。ロックファイルの対象外の参照は、従来どおり完全な commit SHA で固定し、版をコメントに残します（`uses: owner/repo/.github/workflows/x.yml@<commit-sha> # vX.Y.Z`）。次が該当します。
+- 別のリポジトリの再利用可能ワークフロー（`jobs.<id>.uses`）。
+- GitHub Enterprise Server 上のワークフロー。gh-actions-lock が対応していません。
+- コンテナイメージ。`@sha256:` の digest で固定します。
 
 ```bash
 gh extension install github/gh-actions-lock

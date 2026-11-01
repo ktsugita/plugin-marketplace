@@ -256,10 +256,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@<commit-sha> # vX.Y.Z
+      - uses: actions/checkout@vX.Y.Z
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@<commit-sha> # vX.Y.Z
+      - uses: jdx/mise-action@vX.Y.Z
       - run: mise run check
         shell: bash
 ```
