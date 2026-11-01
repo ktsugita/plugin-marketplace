@@ -1,6 +1,6 @@
 ---
 name: github-actions
-description: .github/workflows/ 配下のワークフローの作成・編集、GitHub Actions のセキュリティ対策（permissions、スクリプトインジェクション防止）、デバッグを行うときに使用する。
+description: .github/workflows/ 配下のワークフローの作成・編集、GitHub Actions のセキュリティ対策（permissions、スクリプトインジェクション防止、ロックファイル actions.lock による依存の固定）、デバッグを行うときに使用する。
 license: MIT
 ---
 
@@ -26,17 +26,25 @@ license: MIT
   run: gh pr view "$PR_NUMBER"
 ```
 
-### 3. アクションを完全な commit SHA でピン留めする
+### 3. ワークフローの依存をロックファイルで固定する
 
-タグ（`@v4` など）やブランチは書き換えられうるため、`uses: actions/checkout@<commit-sha> # vX.Y.Z` の形で完全な commit SHA に固定し、版をコメントに残します。
+タグ（`@v4` など）やブランチは付け替えられうるため、[gh-actions-lock](https://github.com/github/gh-actions-lock) で、直接・間接のすべてのアクションを検証済みの commit に固定し、`.github/workflows/actions.lock`（Workflow Lockfiles）に記録します。`uses:` は、ロックファイルが対象とする参照では、読みやすいタグのまま書き、commit SHA には書き換えません。ロックファイルの対象外の参照は、従来どおり完全な commit SHA で固定し、版をコメントに残します（`uses: owner/repo/.github/workflows/x.yml@<commit-sha> # vX.Y.Z`）。次が該当します。
+- 別のリポジトリの再利用可能ワークフロー（`jobs.<id>.uses`）。
+- GitHub Enterprise Server 上のワークフロー。gh-actions-lock が対応していません。
+- コンテナイメージ。`@sha256:` の digest で固定します。
 
 ```bash
-# 最新リリースのタグと commit SHA の取得
-gh api repos/<owner>/<repo>/releases/latest --jq .tag_name
-gh api repos/<owner>/<repo>/commits/<タグ> --jq .sha
+gh extension install github/gh-actions-lock
+gh actions-lock            # 固定して actions.lock を書く
+gh actions-lock --verify   # 確認する(書き込まない)
 ```
 
-更新は `.github/dependabot.yml`（`package-ecosystem: github-actions`、`cooldown: default-days: 7`）に任せます。
+- ワークフローを追加したときと、`uses:` を手で変えたときは `gh actions-lock` を再実行し、`actions.lock` を同じ commit に含めます。
+- ロックファイルを導入済みのワークフローでは、Dependabot が同じ PR で `actions.lock` を更新します。PR に `actions.lock` の変更が含まれないときだけ、再実行します。バージョン更新は、引き続き `.github/dependabot.yml`（`package-ecosystem: github-actions`、`cooldown: default-days: 7`）に任せます。
+- CI では `gh actions-lock --verify` を実行します。`--verify-local` はロックファイルに記載があるかしか見ないため、CI の代わりになりません。公式の `verify-lockfile.yml` を取り込むときは、タグの付け替えを検知する定期実行のために、`on:` に `schedule:` を自分で足します（実ファイルには書かれていません）。
+- `--accept-moved` は、固定した commit が履歴から消えた理由を人が確かめてから使います。CI や定期実行などの自動化では使いません。改ざんされた固定を黙って受け入れてしまうためです。
+
+コマンドの全体、findings の読み方、`local-action` への対処、ロックファイルの対象外、対応する環境と版は、公式スキル `gh-actions-lock` に従います。入っていなければ、`gh skill install github/gh-actions-lock` での導入を利用者に提案し（自分では導入しません）、導入されるまでは[公式の README](https://github.com/github/gh-actions-lock#readme) を読みます。
 
 ### 4. `actions/checkout` に `persist-credentials: false` を付ける
 
@@ -59,6 +67,7 @@ gh api repos/<owner>/<repo>/commits/<タグ> --jq .sha
 ## 静的解析（`jactionlint`）とデバッグ
 
 - **静的解析**: [jactionlint](https://github.com/jdx/jactionlint)（`mise use jactionlint`）でワークフロー、composite action、`dependabot.yml` の構文・型・セキュリティ問題を検証します。git フックに組み込むときは `hk` 2.6.0 以上の `Builtins.jactionlint` を使います（`hk.pkl` の `amends` / `import` の参照先の版も 2.6.0 以上であることを確かめます。`hk` スキルを参照）。
+- **ロックファイルの検証**: git フックには `gh actions-lock --verify-local` を載せられます。ネットワークを使わず、`uses:` ごとに `actions.lock` の記載があるかを確かめます。記載の中身が信頼できるかは見ないため、CI の `--verify` の代わりにはなりません。
 - **デバッグ**:
   - 失敗ログの確認: `gh run list`、`gh run view <run_id> --log-failed`、`gh run watch <run_id>`。
   - デバッグ再実行: `gh run rerun <run_id> --debug`（継続的に出す場合はリポジトリの Actions 変数 `ACTIONS_STEP_DEBUG=true` / `ACTIONS_RUNNER_DEBUG=true` を一時設定し、調査後に削除する）。
