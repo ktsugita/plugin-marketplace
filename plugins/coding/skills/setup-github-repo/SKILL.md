@@ -26,7 +26,7 @@ license: MIT
 | マージ設定 | `gh api repos/<owner>/<repo>` の `allow_squash_merge`、`allow_merge_commit`、`allow_rebase_merge`、`delete_branch_on_merge` | squash のみ許可し、マージ後にブランチを自動削除する |
 | Dependabot | `.github/dependabot.yml` があるか（`.github/workflows/` がまだなければ見送る） | `references/dependabot.yml` を置く |
 | ルールセット | `gh api repos/<owner>/<repo>/rulesets` に同名またはデフォルトブランチ対象のものがあれば、`rulesets/<id>` で `conditions`・`rules`・`bypass_actors` を `references/ruleset.json` と比較する | なければ POST で作成し、中身が違えば差分を示して PUT で更新する |
-| リポジトリの見せ方 | `gh repo view --json description,homepageUrl,repositoryTopics,hasWikiEnabled,hasProjectsEnabled` で、Description が空でないか、Wiki と Projects を使っているか | 下の「リポジトリの見せ方の注意点」に従う |
+| リポジトリの見せ方 | `gh repo view <owner>/<repo> --json description,homepageUrl,repositoryTopics,hasWikiEnabled,hasProjectsEnabled` で、Description が空でないか、Wiki と Projects を使っているか | 下の「リポジトリの見せ方の注意点」に従う |
 
 - Copilot のコードレビューが `AGENTS.md` を読むのは、GitHub.com 上のレビューだけです。IDE 上のレビューにも日本語の指示を効かせたいときは、`.github/copilot-instructions.md` も置きます。
 
