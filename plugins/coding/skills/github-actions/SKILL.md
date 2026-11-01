@@ -38,10 +38,10 @@ gh actions-lock --verify   # 確認する(書き込まない)
 
 - ワークフローを追加したときと、`uses:` を手で変えたときは `gh actions-lock` を再実行し、`actions.lock` を同じ commit に含めます。
 - ロックファイルを導入済みのワークフローでは、Dependabot が同じ PR で `actions.lock` を更新します。PR に `actions.lock` の変更が含まれないときだけ、再実行します。バージョン更新は、引き続き `.github/dependabot.yml`（`package-ecosystem: github-actions`、`cooldown: default-days: 7`）に任せます。
-- CI では `gh actions-lock --verify` を実行します。`--verify-local` はロックファイルに記載があるかしか見ないため、CI の代わりになりません。タグの付け替えを検知する定期実行（`schedule:`）も足します。
+- CI では `gh actions-lock --verify` を実行します。`--verify-local` はロックファイルに記載があるかしか見ないため、CI の代わりになりません。公式の `verify-lockfile.yml` を取り込むときは、タグの付け替えを検知する定期実行のために、`on:` に `schedule:` を自分で足します（実ファイルには書かれていません）。
 - `--accept-moved` は、固定した commit が履歴から消えた理由を人が確かめてから使います。CI や定期実行などの自動化では使いません。改ざんされた固定を黙って受け入れてしまうためです。
 
-コマンドの全体、findings の読み方、`local-action` への対処は、公式スキル（`gh skill install github/gh-actions-lock` で導入）に従います。入っていなければ、[公式の README](https://github.com/github/gh-actions-lock#readme) を読みます。ロックファイルの対象外、対応する環境と版、部分バージョンの書き換え、`verify-lockfile.yml` の取り込み方を確かめたいときは、[references/gh-actions-lock.md](references/gh-actions-lock.md) を読みます。
+コマンドの全体、findings の読み方、`local-action` への対処、ロックファイルの対象外、対応する環境と版は、公式スキル `gh-actions-lock` に従います。入っていなければ、`gh skill install github/gh-actions-lock` での導入を利用者に提案し（自分では導入しません）、導入されるまでは[公式の README](https://github.com/github/gh-actions-lock#readme) を読みます。
 
 ### 4. `actions/checkout` に `persist-credentials: false` を付ける
 
