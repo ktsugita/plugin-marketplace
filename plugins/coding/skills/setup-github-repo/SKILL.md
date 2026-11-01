@@ -16,16 +16,18 @@ license: MIT
 
 ## 手順
 
-1. **権限を確かめる**: `gh api repos/<owner>/<repo> --jq .permissions.admin` が `true` でなければ、マージ設定とルールセットは書き込めないため、管理者への依頼文（「管理者の権限がない場合」）を示します。ファイルの追加（Copilot の指示と Dependabot）は PR で進められます。
+1. **権限を確かめる**: `gh api repos/<owner>/<repo> --jq .permissions.admin` が `true` でなければ、マージ設定とルールセットは書き込めないため、管理者への依頼文（「管理者の権限がない場合」）を示します。ファイルの追加（必要なときの Copilot の指示と Dependabot）は PR で進められます。
 2. **現状を読んで差分を示す**: 下の表の4項目を調べ、「済み」か「足りない」かを一覧にします。
 3. **確認を取って順に適用する**: 適用の順は **ファイル → マージ設定 → ルールセット** です。ルールセットを最後にするのは、先に入れると初期ファイルを `main` に直接 push できなくなるためです。
 
 | 項目 | 現状の読み方 | 適用 |
 | :- | :- | :- |
-| Copilot の日本語の指示 | `.github/copilot-instructions.md` に日本語の指示があるか | `references/copilot-instructions.md` を置く（`AGENTS.md` があれば矛盾しないよう調整する） |
+| Copilot の日本語の指示 | `AGENTS.md` と `.github/copilot-instructions.md` の内容に、日本語で書く旨の指示があるか | どちらかにあれば、何も置かない。どちらにもなければ、`references/copilot-instructions.md` の指示を、既存の内容を保ったまま追記する（既にあるファイルへ。両方あれば `AGENTS.md` へ。どちらもなければ `.github/copilot-instructions.md` を置く） |
 | マージ設定 | `gh api repos/<owner>/<repo>` の `allow_squash_merge`、`allow_merge_commit`、`allow_rebase_merge`、`delete_branch_on_merge` | squash のみ許可し、マージ後にブランチを自動削除する |
 | Dependabot | `.github/dependabot.yml` があるか（`.github/workflows/` がまだなければ見送る） | `references/dependabot.yml` を置く |
 | ルールセット | `gh api repos/<owner>/<repo>/rulesets` に同名またはデフォルトブランチ対象のものがあれば、`rulesets/<id>` で `conditions`・`rules`・`bypass_actors` を `references/ruleset.json` と比較する | なければ POST で作成し、中身が違えば差分を示して PUT で更新する |
+
+- Copilot のコードレビューが `AGENTS.md` を読むのは、GitHub.com 上のレビューだけです。IDE 上のレビューにも日本語の指示を効かせたいときは、`.github/copilot-instructions.md` も置きます。
 
 ### マージ設定のコマンド
 
