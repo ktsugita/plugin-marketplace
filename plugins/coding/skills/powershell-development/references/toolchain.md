@@ -241,7 +241,7 @@ if ($result.Result -ne 'Passed') {
 
 ## CI
 
-CI では mise を入れて（GitHub Actions では `jdx/mise-action`）、`mise run check` を1ステップで実行します。汎用の項目（SHA でのピン留め、`permissions`、`concurrency`、`timeout-minutes`）は、`github-actions` スキルが使える場合はそれに従います。使えない場合は GitHub の公式ドキュメント（https://docs.github.com/en/actions/reference/security/secure-use）を参照します。PowerShell に固有の点は次の4つです。
+CI では mise を入れて（GitHub Actions では `jdx/mise-action`）、`mise run check` を1ステップで実行します。汎用の項目（`gh-actions-lock` による依存の固定、`permissions`、`concurrency`、`timeout-minutes`）は、`github-actions` スキルが使える場合はそれに従います。使えない場合は GitHub の公式ドキュメント（https://docs.github.com/en/actions/reference/security/secure-use）を参照します。PowerShell に固有の点は次の4つです。
 
 - ステップは `run: mise run check` だけにし、`shell: bash` を明示します。PowerShell の処理が要るときは `scripts/*.ps1` にして先頭の3行を持たせ、mise タスク経由で呼びます。`shell: pwsh` のインラインコードは、先頭の3行が効かないので避けます。
 - OS は Linux と Windows にします。規約が大文字小文字と OS の分岐を求めるので、Linux だけでは Windows 側の失敗を見逃します。macOS は、プロジェクトが対象に掲げたときだけ足し、`lockfile_platforms` にも足します。マトリクスは `lockfile_platforms` と同じ OS にそろえます。
