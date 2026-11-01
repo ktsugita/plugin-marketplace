@@ -1,6 +1,6 @@
 # plugin-marketplace
 
-自作のプラグインを公開する。marketplace としても利用できる。
+`coding` と `writing` の 2 つのプラグインを配布する marketplace。Claude Code と GitHub Copilot CLI で使える。
 
 ## プラグイン
 
@@ -19,6 +19,13 @@
 - GitHub Copilot CLI
 
 [`mattpocock-skills`](https://github.com/mattpocock/skills) プラグインも入れることを推奨する。`coding` の一部のスキルが、入っていればそれも使う(`github-pr` の PR 本文のテンプレートなど)。入っていなくても `coding` は使える。入れ方は「mattpocock-skills も入れる」を参照。
+
+GitHub の公式スキル `gh-actions-lock`(`github-actions` が案内する)と `gh-stack`(`github-pr` が案内する)も、入っていれば使う。入っていなくても `coding` は使える。入れるときは、次を実行する。
+
+```bash
+gh skill install github/gh-actions-lock
+gh skill install github/gh-stack
+```
 
 ### Claude Code に入れる
 
@@ -55,6 +62,17 @@ GitHub Copilot CLI:
 copilot plugin marketplace add mattpocock/skills
 copilot plugin install mattpocock-skills@mattpocock
 ```
+
+### 更新する
+
+このリポジトリは `version` を付けず、commit ごとに更新を届ける。手元のプラグインを最新にするときは、次を実行する。
+
+```bash
+claude plugin update coding@ktsugita
+claude plugin update writing@ktsugita
+```
+
+GitHub Copilot CLI では、`copilot plugin update` を同じ形で使う。
 
 ## 不具合や要望
 
