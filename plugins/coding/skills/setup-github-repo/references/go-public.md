@@ -4,5 +4,6 @@
 
 - 履歴と設定に、パスワード、トークン、個人情報が入っていないこと。公開すると、過去のコミットも、Actions の履歴とログも、誰でも読めるようになります。
 - `README.md` と `LICENSE` が、公開してよい内容であること。
+- Description が設定されていること。空なら、`SKILL.md` の「リポジトリの見せ方の注意点」に従って設定します。
 
 確認を取ってから、`gh repo edit <owner>/<repo> --visibility public --accept-visibility-change-consequences` を実行します。確認では、誰でもフォークできること、非公開に戻しても、すでにできた公開のフォークは、元から切り離されて残ることを伝えます(出典: GitHub Docs の「Setting repository visibility」)。
