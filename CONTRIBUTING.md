@@ -15,11 +15,9 @@
 | テストだけを走らせる(`pre-push` でも走る) | `mise run test` |
 | `marketplace.json`、`plugin.json`、スキルの定義だけを検証する | `mise run validate` |
 | `version` と `dependencies` を書いていないことを点検する | `mise run policy:check` |
-| `AGENTS.md` と `.github/copilot-instructions.md` の共通部分が一致することを点検する | `mise run agents-sync:check` |
 | コミットメッセージを点検する | `mise run commit-msg:check -- <メッセージのファイル>` |
 
 - `validate` が `version` を指定していない警告を出すのは、想定どおり。このリポジトリは `version` を付けず、commit ごとに利用者へ更新を届ける。警告以外の指摘が出たときは直す。
-- `AGENTS.md` の「`## Agent skills`」より前を変えたときは、`.github/copilot-instructions.md` も同じ内容にする。Copilot Review は、後者を読む。
 
 ## プラグインを足す
 
