@@ -14,8 +14,12 @@
 | リポジトリ全体を点検し、テストを走らせる | `mise run check` |
 | テストだけを走らせる(`pre-push` でも走る) | `mise run test` |
 | `marketplace.json`、`plugin.json`、スキルの定義だけを検証する | `mise run validate` |
+| 直せる指摘を、リポジトリ全体で直す | `mise run fix` |
 | `version` と `dependencies` を書いていないことを点検する | `mise run policy:check` |
 | コミットメッセージを点検する | `mise run commit-msg:check -- <メッセージのファイル>` |
+| 依存ツールと Python の依存を最新に更新する | `mise run deps:upgrade` |
+
+- `deps:upgrade` は `mise.lock` と `uv.lock` を書き換える。`mise` 自体を更新したときも `mise.lock` の書式が変わることがある。どちらの差分も commit に含める。
 
 - `validate` が `version` を指定していない警告を出すのは、想定どおり。このリポジトリは `version` を付けず、commit ごとに利用者へ更新を届ける。警告以外の指摘が出たときは直す。
 
@@ -42,3 +46,8 @@
 
 - メッセージは日本語で書く。1 行目で何を変えたかを書き、本文で理由や内訳を書く。
 - AI ツールの帰属行(`Co-Authored-By` など)は入れない。`commit-msg` フックが止める。
+
+## 変更の出し方
+
+- `main` へは直接 push できない。作業ブランチから PR を出し、squash でマージする。マージしたブランチは自動で削除される。この制限は GitHub 側のルールセットの設定で、ファイルでは管理していない(内容は `plugins/coding/skills/setup-github-repo/references/ruleset.json` と同じ)。
+- squash すると、PR のタイトルが `main` の commit の1行目になる。タイトルは `<種類>: <変更の内容>` と書く。種類は、これまでの履歴で使っている `docs`(ドキュメントとスキルの本文)、`chore`(設定と依存の更新)、`refactor`(挙動を変えない整理)から選び、足りなければ `feat`、`fix`、`test` も使う。`commit-msg` フックは接頭辞を点検しない。
