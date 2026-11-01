@@ -15,6 +15,8 @@ license: MIT
 | 説明してから実行する | `gh pr checkout` |
 | 確認を取ってから実行する | `gh pr create`（`--draft` を含む）、`comment`、`review`、`edit`、`ready`、`update-branch`、`merge`（`--auto` を含む）、`close`、`reopen`、`revert`、`gh run rerun`、スレッドへの返信と Resolve |
 
+- ただし、作業を引き継ぐときに自分を担当へ加える操作は、確認を取らずに実行します(「担当に自分を加える」を参照)。
+
 - 確認では、送り先のリポジトリと操作の内容（タイトルと本文、ベースとヘッド、マージ方法など）を示します。
 - リポジトリの規約（PR テンプレート、`CONTRIBUTING.md`、`AGENTS.md`）を先に確かめます。PR テンプレートは `git ls-tree -r --name-only origin/<ベース> | grep -i -E '(^|/)pull_request_template(\.md|/)'` で探します。
 - 書き込み前に `gh auth status` と送り先（`gh repo view --json nameWithOwner --jq .nameWithOwner`）を確かめます。対話式の `gh auth login` は提示だけにし、`gh auth token` や `--show-token` は使いません。
@@ -33,7 +35,17 @@ license: MIT
 
 1. 今のブランチがベース（`gh repo view --json defaultBranchRef --jq .defaultBranchRef.name`）でないことと、ベースより先のコミット（`git log --oneline <ベース>..HEAD`）があることを確かめます。未 push なら `git` スキルの手順で push します。変更が大きくレビューしやすい単位に分けたいとき、またはまだマージされていない別の PR に依存するときは、PR を積み重ねる（スタック）ことを利用者に提案します。進めるなら `gh-stack` に従います。
 2. 本文を下書きします。リポジトリに PR テンプレートがあればそれを使い、なければ `mattpocock-skills:pr` が入っているときはそのテンプレートで書きます。入っていないときは「概要 / 変更点 / 確認方法 / 関連 Issue（あれば）」の4項目で書きます。デフォルトブランチ向けで関連 Issue があれば `Closes #番号` を添えます（`github-issue` スキルを参照）。
-3. 送り先、ベースとヘッド、タイトル、本文を示して確認を取り、一時ファイルを使って `gh pr create --title "<タイトル>" --body-file <ファイル> --base <ベース>` で作ります（利用者が下書きを求めたときだけ `--draft` を付けます）。
+3. 送り先、ベースとヘッド、タイトル、本文、担当（自分）を示して確認を取り、一時ファイルを使って `gh pr create --title "<タイトル>" --body-file <ファイル> --base <ベース> --assignee @me` で作ります（利用者が下書きを求めたときだけ `--draft` を付けます）。
+4. 本文に `Closes #番号` の Issue があり、担当に自分が含まれていなければ、`github-issue` スキルの「着手する」に従って加えます。`Refs #番号` だけの Issue には触れません。
+
+### 担当に自分を加える
+
+自分が作っていない PR の作業を引き継ぐときは、`gh pr view <番号> --json assignees` で担当を確かめ、自分が含まれていなければ `gh pr edit <番号> --add-assignee @me` で加えます。引き継ぎとは、レビュー指摘への対応（`response`）、ベースの変更の取り込み、そのブランチへの commit を始めるときです。PR を読む、CI を見る、コメントするだけのときは加えません。
+
+- 確認は取らずに実行して、実行したことを報告します。
+- ほかの人が担当にいても、その人を外さずに自分を加えます。加える前に「<ほかの人> が担当です。自分も加えます」と伝えます。担当を外す操作は行いません。
+- 書き込み権限がなくエラーになったときは、再試行せずに加えられなかったことを伝え、作業は続けます。
+- レビューアは担当に含めません。レビューを依頼するときは、利用者が求めたときだけ、確認を取って `gh pr edit <番号> --add-reviewer <ユーザー>` を使います。
 
 ### ベースの変更を取り込む
 
