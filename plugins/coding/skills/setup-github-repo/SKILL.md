@@ -22,7 +22,7 @@ license: MIT
 
 | 項目 | 現状の読み方 | 適用 |
 | :- | :- | :- |
-| Copilot の日本語の指示 | `AGENTS.md` に日本語で書く旨があるか。なければ `.github/copilot-instructions.md` の有無 | `AGENTS.md` があって日本語の指示が入っていれば、何も置かない。どちらもなければ `references/copilot-instructions.md` を置く |
+| Copilot の日本語の指示 | `AGENTS.md` と `.github/copilot-instructions.md` の内容に、日本語で書く旨の指示があるか | どちらかにあれば、何も置かない。どちらにもなければ、`references/copilot-instructions.md` の指示を、既存の内容を保ったまま追記する（既にあるファイルへ。両方あれば `AGENTS.md` へ。どちらもなければ `.github/copilot-instructions.md` を置く） |
 | マージ設定 | `gh api repos/<owner>/<repo>` の `allow_squash_merge`、`allow_merge_commit`、`allow_rebase_merge`、`delete_branch_on_merge` | squash のみ許可し、マージ後にブランチを自動削除する |
 | Dependabot | `.github/dependabot.yml` があるか（`.github/workflows/` がまだなければ見送る） | `references/dependabot.yml` を置く |
 | ルールセット | `gh api repos/<owner>/<repo>/rulesets` に同名またはデフォルトブランチ対象のものがあれば、`rulesets/<id>` で `conditions`・`rules`・`bypass_actors` を `references/ruleset.json` と比較する | なければ POST で作成し、中身が違えば差分を示して PUT で更新する |
