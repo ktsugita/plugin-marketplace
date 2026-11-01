@@ -18,6 +18,7 @@ license: MIT
 - 確認では、送り先のリポジトリと操作の内容（タイトルと本文、ベースとヘッド、マージ方法など）を示します。
 - リポジトリの規約（PR テンプレート、`CONTRIBUTING.md`、`AGENTS.md`）を先に確かめます。PR テンプレートは `git ls-tree -r --name-only origin/<ベース> | grep -i -E '(^|/)pull_request_template(\.md|/)'` で探します。
 - 書き込み前に `gh auth status` と送り先（`gh repo view --json nameWithOwner --jq .nameWithOwner`）を確かめます。対話式の `gh auth login` は提示だけにし、`gh auth token` や `--show-token` は使いません。
+- スタック（積み重ねた PR）の PR には、このスキルの手順を使いません。`gh pr merge` ではスタックをマージできないためです。PR のブランチで `gh stack view --json` を実行し（読み取りだけです）、成功したらスタックなので、公式スキル `gh-stack` に従います。終了コード 2 は、ローカルに登録されたスタックの中にいないという意味です。別の利用者が作ったスタックの PR を新しく clone して取得した場合も 2 になるので、スタックでない証拠にはなりません。2 のときと `gh-stack` が入っていないときは、ベースブランチに関係なく（最下層の PR のベースもデフォルトブランチです）、確認を取る操作（`merge` など）の確認に「スタックの PR ではないか」を含めて、利用者に尋ねます。スタックなら、`gh skill install github/gh-stack` での導入を提案し（自分では導入しません）、導入されるまでスタックの PR は操作しません。
 
 ## 呼び出しと場面ごとの手順
 
@@ -30,7 +31,7 @@ license: MIT
 
 ### PR を作る
 
-1. 今のブランチがベース（`gh repo view --json defaultBranchRef --jq .defaultBranchRef.name`）でないことと、ベースより先のコミット（`git log --oneline <ベース>..HEAD`）があることを確かめます。未 push なら `git` スキルの手順で push します。
+1. 今のブランチがベース（`gh repo view --json defaultBranchRef --jq .defaultBranchRef.name`）でないことと、ベースより先のコミット（`git log --oneline <ベース>..HEAD`）があることを確かめます。未 push なら `git` スキルの手順で push します。変更が大きくレビューしやすい単位に分けたいとき、またはまだマージされていない別の PR に依存するときは、PR を積み重ねる（スタック）ことを利用者に提案します。進めるなら `gh-stack` に従います。
 2. 本文を下書きします。リポジトリに PR テンプレートがあればそれを使い、なければ `mattpocock-skills:pr` が入っているときはそのテンプレートで書きます。入っていないときは「概要 / 変更点 / 確認方法 / 関連 Issue（あれば）」の4項目で書きます。デフォルトブランチ向けで関連 Issue があれば `Closes #番号` を添えます（`github-issue` スキルを参照）。
 3. 送り先、ベースとヘッド、タイトル、本文を示して確認を取り、一時ファイルを使って `gh pr create --title "<タイトル>" --body-file <ファイル> --base <ベース>` で作ります（利用者が下書きを求めたときだけ `--draft` を付けます）。
 
@@ -53,4 +54,4 @@ license: MIT
 
 ## 他のスキルへの案内
 
-- ブランチ・commit・push・コンフリクト解消は `git`、Issue は `github-issue`、`.github/workflows/` の不具合は `github-actions`、認証設定は `git-config`、Copilot レビューの日本語化は `setup-github-repo`。
+- ブランチ・commit・push・コンフリクト解消は `git`、Issue は `github-issue`、`.github/workflows/` の不具合は `github-actions`、認証設定は `git-config`、Copilot レビューの日本語化は `setup-github-repo`、スタックの PR の作成・同期・マージは公式スキルの `gh-stack`。
