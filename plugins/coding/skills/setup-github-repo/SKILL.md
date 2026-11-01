@@ -51,6 +51,14 @@ gh api -X PATCH repos/<owner>/<repo> \
 - 更新: `gh api -X PUT repos/<owner>/<repo>/rulesets/<id> --input <ruleset.json の絶対パス>`
 - 非公開リポジトリでプラン制限（`403`）が返ったときは、再試行せず理由を伝えて見送ります。
 
+### CODEOWNERS の注意点
+
+CODEOWNERS は、上の表の項目に入れません。足りない項目として毎回は提案しません。
+
+- メンテナーが 2 人以上いるとき、または外部の人の PR を受け付けるときだけ、`.github/CODEOWNERS` を提案します。メンテナーが 1 人のリポジトリでは提案しません。GitHub は PR の作成者本人にレビューを依頼しないため、依頼先が作成者だけになり、効果がないからです。
+- 提案するときは、担当する範囲とオーナー（ユーザー名またはチーム名）を利用者に尋ね、推測しません。確認を取って置きます。ファイルの追加は PR で進められるため、管理者の権限がなくてもできます。
+- `references/ruleset.json` の `require_code_owner_review` は `false` のままにします。`true` にすると、オーナーの承認がなければマージできません。PR の作成者は自分の PR を承認できないため、メンテナーが 1 人のときは自分の PR をマージできなくなります。CODEOWNERS を置いても、必須化は別の判断にします。
+
 ### リポジトリの見せ方の注意点
 
 - Description: 空なら、README の冒頭から 1 行の文面を下書きして示し、確認を取ります。言語は README に合わせます。`gh repo edit <owner>/<repo> --description "<文面>"` で設定します。
