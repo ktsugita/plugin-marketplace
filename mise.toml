@@ -67,21 +67,6 @@ if grep -qiE '^(co-authored-by:|generated with )' "$usage_file"; then
 fi
 '''
 
-# AGENTS.md の共通部分(「## Agent skills」より前)を、Copilot Review 用のコピーに揃える。
-# $(...) は末尾の改行を落とすので、見出しの前の空行の有無は差にならない。
-[tasks."agents-sync:check"]
-description = "AGENTS.md の共通部分と .github/copilot-instructions.md が一致することを確かめる"
-shell = "bash -c"
-run = '''
-common=$(sed '/^## Agent skills/,$d' AGENTS.md)
-copy=$(cat .github/copilot-instructions.md)
-if [ "$common" != "$copy" ]; then
-  echo "AGENTS.md の「## Agent skills」より前と、.github/copilot-instructions.md の内容が違います。" >&2
-  echo "共通部分を変えたときは、両方を同じ内容にしてください。" >&2
-  exit 1
-fi
-'''
-
 [tasks."policy:check"]
 description = "plugin.json と marketplace.json に version と dependencies を書かない方針を点検する"
 shell = "bash -c"

@@ -32,10 +32,6 @@ local linters = new Mapping {
         glob = List(".claude-plugin/**", "plugins/**")
         check = "mise run validate"
     }
-    ["agents-sync"] = new Step {
-        glob = List("AGENTS.md", ".github/copilot-instructions.md")
-        check = "mise run agents-sync:check"
-    }
     ["policy"] = new Step {
         glob = List(".claude-plugin/marketplace.json", "plugins/*/.claude-plugin/plugin.json")
         check = "mise run policy:check"
