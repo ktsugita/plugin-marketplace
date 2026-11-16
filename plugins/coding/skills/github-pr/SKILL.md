@@ -24,13 +24,13 @@ license: MIT
 
 ### スタックかどうかの判定
 
-`merge` と `update-branch` の前に、利用者には尋ねず、次の順で判定します（すべて読み取りだけです）。
+`merge` と `update-branch` の前に、次の順で判定します（すべて読み取りだけです）。通常の PR と確定したときは、利用者に尋ねません。
 
 1. PR のブランチで `gh stack view --json` を実行します。成功したらスタックなので、公式スキル `gh-stack` に従います。終了コード 2 は、ローカルに登録されたスタックの中にいないという意味です。別の利用者が作ったスタックの PR を新しく clone して取得した場合も 2 になるので、スタックでない証拠にはなりません。2 のときと `gh-stack` が入っていないときは、手順 2 に進みます。
-2. `gh pr view <番号> --json baseRefName,headRefName` と `gh repo view --json defaultBranchRef --jq .defaultBranchRef.name` で、次のどちらかに当てはまればスタックとして扱います。
-   - `baseRefName` がデフォルトブランチでない（途中や最上位の PR）。
-   - `gh pr list --base <headRefName> --state open --json number` が1件以上ある（上に PR が積まれた最下層の PR）。
-3. どちらにも当てはまらなければ、通常の PR です。確認なしで、このスキルの手順を続けます。
+2. `gh api "repos/{owner}/{repo}/stacks?pull_request=<番号>"` で、リモートのスタックへの所属を照会します（`gh-stack` が使うものと同じ照会です）。ベースがデフォルトブランチでないことは、判定に使いません（`develop` などの長く続くブランチ向けの独立した PR があるためです）。
+   - 空でない配列が返れば、スタックです。
+   - 空の配列 `[]` が返れば、通常の PR です。確認なしで、このスキルの手順を続けます。
+   - 照会が失敗したとき（404、権限なしなど）は、非所属とは扱いません。確認を取る操作の確認に「スタックの PR ではないか」を含めて、利用者に尋ねます。
 
 スタックと判定したときは、`gh skill install github/gh-stack` での導入を提案し（自分では導入しません）、導入されるまで `merge` と `update-branch` は行いません。
 
