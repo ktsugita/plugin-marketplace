@@ -20,7 +20,19 @@ license: MIT
 - 確認では、送り先のリポジトリと操作の内容（タイトルと本文、ベースとヘッド、マージ方法など）を示します。
 - リポジトリの規約（PR テンプレート、`CONTRIBUTING.md`、`AGENTS.md`）を先に確かめます。PR テンプレートは `git ls-tree -r --name-only origin/<ベース> | grep -i -E '(^|/)pull_request_template(\.md|/)'` で探します。
 - 書き込み前に `gh auth status` と送り先（`gh repo view --json nameWithOwner --jq .nameWithOwner`）を確かめます。対話式の `gh auth login` は提示だけにし、`gh auth token` や `--show-token` は使いません。
-- スタック（積み重ねた PR）の PR には、このスキルの手順を使いません。`gh pr merge` ではスタックをマージできないためです。PR のブランチで `gh stack view --json` を実行し（読み取りだけです）、成功したらスタックなので、公式スキル `gh-stack` に従います。終了コード 2 は、ローカルに登録されたスタックの中にいないという意味です。別の利用者が作ったスタックの PR を新しく clone して取得した場合も 2 になるので、スタックでない証拠にはなりません。2 のときと `gh-stack` が入っていないときは、ベースブランチに関係なく（最下層の PR のベースもデフォルトブランチです）、確認を取る操作（`merge` など）の確認に「スタックの PR ではないか」を含めて、利用者に尋ねます。スタックなら、`gh skill install github/gh-stack` での導入を提案し（自分では導入しません）、導入されるまでスタックの PR は操作しません。
+- スタック（積み重ねた PR）の PR には、`merge` と `update-branch` でこのスキルの手順を使いません。`gh pr merge` ではスタックをマージできないためです。それ以外の操作は、スタックでも通常の手順で行えます。判定は「スタックかどうかの判定」に従います。
+
+### スタックかどうかの判定
+
+`merge` と `update-branch` の前に、利用者には尋ねず、次の順で判定します（すべて読み取りだけです）。
+
+1. PR のブランチで `gh stack view --json` を実行します。成功したらスタックなので、公式スキル `gh-stack` に従います。終了コード 2 は、ローカルに登録されたスタックの中にいないという意味です。別の利用者が作ったスタックの PR を新しく clone して取得した場合も 2 になるので、スタックでない証拠にはなりません。2 のときと `gh-stack` が入っていないときは、手順 2 に進みます。
+2. `gh pr view <番号> --json baseRefName,headRefName` と `gh repo view --json defaultBranchRef --jq .defaultBranchRef.name` で、次のどちらかに当てはまればスタックとして扱います。
+   - `baseRefName` がデフォルトブランチでない（途中や最上位の PR）。
+   - `gh pr list --base <headRefName> --state open --json number` が1件以上ある（上に PR が積まれた最下層の PR）。
+3. どちらにも当てはまらなければ、通常の PR です。確認なしで、このスキルの手順を続けます。
+
+スタックと判定したときは、`gh skill install github/gh-stack` での導入を提案し（自分では導入しません）、導入されるまで `merge` と `update-branch` は行いません。
 
 ## 呼び出しと場面ごとの手順
 
@@ -50,13 +62,14 @@ license: MIT
 
 ### ベースの変更を取り込む
 
-`gh pr view <番号> --json mergeStateStatus,mergeable,baseRefName` で状態を確かめます。
+先に「スタックかどうかの判定」を行い、スタックなら `gh-stack` に従います。通常の PR なら、`gh pr view <番号> --json mergeStateStatus,mergeable,baseRefName` で状態を確かめます。
 
 - `BEHIND`: 確認を取って `gh pr update-branch <番号>` を実行し、手元は `git pull --ff-only origin <ブランチ名>` で追いつきます。
 - `DIRTY`: 手元をその PR のブランチにし、`git fetch origin <ベース>` と `git merge origin/<ベース>` でコンフリクトを出してから、`git` スキルの `references/conflict.md` に従います。
 
 ### マージする
 
+0. 「スタックかどうかの判定」を行い、スタックなら `gh-stack` に従います。
 1. `gh pr view <番号> --json state,isDraft,reviewDecision,mergeStateStatus` と `gh pr checks <番号>` で、ドラフトでないこと、CI が通っていること、必要な承認があることを確かめます。
 2. `gh repo view --json squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed` で許可されたマージ方法を確かめ、確認を取って `gh pr merge <番号> --squash` などを実行します（`--admin` は使いません）。
 
